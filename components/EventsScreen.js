@@ -21,8 +21,10 @@ const GET_EVENTS = gql`
       personInGroupsByPersonId {
         nodes {
           nodeId
+          groupId
           groupOfPersonByGroupId {
             nodeId
+            abbrName
             eventMembersByParticipant {
               nodes {
                 nodeId
@@ -78,39 +80,43 @@ function dateToYMD(date) {
 }
 
 //Приводит данные с сервера в пригодный для agenda вид
-const normalizeData = (nodes, startDate, endDate) => {
-  data = {};
+const normalizeData = (requestedData, startDate, endDate) => {
+  const data = {};
 
-  //console.log(startDate);
-  //console.log(endDate);
-
-  //fill dates:
+  //fill empty dates:
   while (startDate.getTime() < endDate.getTime()) {
     data[dateToYMD(startDate)] = [];
     startDate.setDate(startDate.getDate() + 1);
   }
   data[dateToYMD(endDate)] = [];
 
-  nodes.forEach(event => {
-    //console.log(event);
+  requestedData.nodes.forEach(group => {
+    group.groupOfPersonByGroupId.eventMembersByParticipant.nodes.forEach(
+      event => {
+        //console.log(event);
+        event.eventByEventId.timetablesByEventId.nodes.forEach(time => {
+          const startDateTime = time.startTime.split("T");
+          const endDateTime = time.endTime.split("T");
 
-    event.eventByEventId.timetablesByEventId.nodes.forEach(time => {
-      const startDateTime = time.startTime.split("T");
-      const endDateTime = time.endTime.split("T");
+          if (!data[startDateTime[0]]) {
+            data[startDateTime[0]] = [];
+          }
 
-      if (!data[startDateTime[0]]) {
-        data[startDateTime[0]] = [];
+          data[startDateTime[0]].push({
+            eventId: event.eventByEventId.id,
+            timeId: time.id,
+            name: event.eventByEventId.name,
+            startTime: startDateTime[1],
+            endTime: endDateTime[1],
+            groupAbbr: group.groupOfPersonByGroupId.abbrName
+          });
+        });
       }
-
-      data[startDateTime[0]].push({
-        eventId: event.eventByEventId.id,
-        timeId: time.id,
-        name: event.eventByEventId.name,
-        startTime: startDateTime[1],
-        endTime: endDateTime[1]
-      });
-    });
+    );
   });
+
+  //Нужна сортировка по времени!
+
   return data;
 };
 
@@ -219,11 +225,19 @@ export default class EventsScreen extends React.Component {
   constructor(props) {
     super(props);
 
+    //Время то текущее ставится!!!!
     this.minDate = new Date();
     this.minDate.setDate(1);
+    this.minDate.setHours(0);
+    this.minDate.setMinutes(0);
+    this.minDate.setSeconds(0);
+
     this.maxDate = new Date();
     this.maxDate.setMonth(this.maxDate.getMonth() + 1);
     this.maxDate.setDate(1);
+    this.maxDate.setHours(0);
+    this.maxDate.setMinutes(0);
+    this.maxDate.setSeconds(0);
     // this.minDate = new Date("2019-03-01");
     // this.maxDate = new Date("2019-04-01");
   }
@@ -259,8 +273,7 @@ export default class EventsScreen extends React.Component {
 
           //Тут [0]
           const events = normalizeData(
-            data.currentPerson.personInGroupsByPersonId.nodes[0]
-              .groupOfPersonByGroupId.eventMembersByParticipant.nodes,
+            data.currentPerson.personInGroupsByPersonId,
             new Date(this.minDate),
             new Date(this.maxDate)
             // this.minDate,
@@ -283,13 +296,25 @@ export default class EventsScreen extends React.Component {
               }}
               loadItemsForMonth={date => {
                 //Поменять названия?
-                const firstDayOfMonth = new Date(date.year, date.month - 1, 1);
+                const firstDayOfMonth = new Date(
+                  date.year,
+                  date.month - 1,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                );
                 //Упростить?
                 const lastDayOfMonth = addDays(
                   new Date(
                     date.year,
                     date.month - 1,
-                    daysInMonth(date.month - 1, date.year)
+                    daysInMonth(date.month - 1, date.year),
+                    0,
+                    0,
+                    0,
+                    0
                   ),
                   1
                 );
@@ -338,35 +363,50 @@ export default class EventsScreen extends React.Component {
 
                     if (!fetchMoreResult) return prev;
 
-                    const combination = unionEvents(
-                      prev.currentPerson.personInGroupsByPersonId.nodes[0]
-                        .groupOfPersonByGroupId.eventMembersByParticipant.nodes,
-                      fetchMoreResult.currentPerson.personInGroupsByPersonId
-                        .nodes[0].groupOfPersonByGroupId
-                        .eventMembersByParticipant.nodes
+                    //Опасный момент
+                    const groups = [];
+
+                    prev.currentPerson.personInGroupsByPersonId.nodes.forEach(
+                      (item, index) => {
+                        const combination = unionEvents(
+                          prev.currentPerson.personInGroupsByPersonId.nodes[
+                            index
+                          ].groupOfPersonByGroupId.eventMembersByParticipant
+                            .nodes,
+                          fetchMoreResult.currentPerson.personInGroupsByPersonId
+                            .nodes[index].groupOfPersonByGroupId
+                            .eventMembersByParticipant.nodes
+                        );
+
+                        groups[index] = {
+                          groupOfPersonByGroupId: {
+                            eventMembersByParticipant: {
+                              nodes: combination,
+                              __typename: "EventMembersConnection"
+                            },
+                            __typename: "GroupOfPerson",
+                            nodeId: item.groupOfPersonByGroupId.nodeId,
+                            abbrName: item.groupOfPersonByGroupId.abbrName
+                          },
+                          __typename: "PersonInGroup",
+                          nodeId: item.nodeId,
+                          groupId: item.groupId
+                        };
+                      }
                     );
+
+                    // const combination = unionEvents(
+                    //   prev.currentPerson.personInGroupsByPersonId.nodes[0]
+                    //     .groupOfPersonByGroupId.eventMembersByParticipant.nodes,
+                    //   fetchMoreResult.currentPerson.personInGroupsByPersonId
+                    //     .nodes[0].groupOfPersonByGroupId
+                    //     .eventMembersByParticipant.nodes
+                    // );
 
                     const result = {
                       currentPerson: {
                         personInGroupsByPersonId: {
-                          nodes: [
-                            {
-                              groupOfPersonByGroupId: {
-                                eventMembersByParticipant: {
-                                  nodes: combination,
-                                  __typename: "EventMembersConnection"
-                                },
-                                __typename: "GroupOfPerson",
-                                nodeId:
-                                  prev.currentPerson.personInGroupsByPersonId
-                                    .nodes[0].groupOfPersonByGroupId.nodeId
-                              },
-                              __typename: "PersonInGroup",
-                              nodeId:
-                                prev.currentPerson.personInGroupsByPersonId
-                                  .nodes[0].nodeId
-                            }
-                          ],
+                          nodes: groups,
                           __typename: "PersonInGroupsConnection"
                         },
                         __typename: "Person",
@@ -377,7 +417,6 @@ export default class EventsScreen extends React.Component {
                   }
                 });
               }}
-              //onDayChange={(day)=>{console.log('day changed')}}
               //selected={new Date("2019-03-01")}
               renderItem={this.renderItem.bind(this)}
               renderEmptyDate={this.renderEmptyDate}
@@ -422,9 +461,25 @@ export default class EventsScreen extends React.Component {
         >
           <View style={{ padding: 10 }}>
             {/* контейнер? */}
-            <Text style={{ textAlign: "left", fontSize: 20 }}>{`${
-              item.startTime
-            } - ${item.endTime}`}</Text>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "space-between"
+              }}
+            >
+              <Text style={{ textAlign: "left", fontSize: 20 }}>{`${
+                item.startTime
+              } - ${item.endTime}`}</Text>
+              <Text
+                style={{
+                  textAlign: "right",
+                  fontSize: 20
+                }}
+              >
+                {item.groupAbbr}
+              </Text>
+            </View>
             <Text
               style={{
                 textAlign: "left",
