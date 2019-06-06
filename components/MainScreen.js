@@ -2,6 +2,8 @@ import React from "react";
 import { Text, Button } from "react-native-elements";
 import EventsScreen from "./EventsScreen";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { Query } from "react-apollo";
+import { GET_SELECTED_GROUPID } from "./GroupSelectForm";
 
 export default class MainScreen extends React.Component {
   constructor(props) {
@@ -22,6 +24,20 @@ export default class MainScreen extends React.Component {
   };
 
   render() {
-    return <EventsScreen {...this.props} />;
+    return (
+      <Query query={GET_SELECTED_GROUPID}>
+        {({ data, loading, error }) => {
+          if (error) return null;
+          if (loading) return null;
+
+          return (
+            <EventsScreen
+              {...this.props}
+              groupId={data.selectedGroup.groupId}
+            />
+          );
+        }}
+      </Query>
+    );
   }
 }

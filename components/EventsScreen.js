@@ -249,7 +249,7 @@ export default class EventsScreen extends React.Component {
         variables={{
           minDate: this.minDate,
           maxDate: this.maxDate,
-          groupId: undefined
+          groupId: this.props.groupId !== -1 ? this.props.groupId : undefined
         }}
         notifyOnNetworkStatusChange
       >
