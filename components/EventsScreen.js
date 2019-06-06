@@ -15,10 +15,10 @@ import lodash from "lodash";
 import calendarLocalization from "./calendarLocalization"; //???
 
 const GET_EVENTS = gql`
-  query GetEvents($minDate: Datetime!, $maxDate: Datetime!) {
+  query GetEvents($minDate: Datetime!, $maxDate: Datetime!, $groupId: Int) {
     currentPerson {
       nodeId
-      personInGroupsByPersonId {
+      personInGroupsByPersonId(condition: { groupId: $groupId }) {
         nodes {
           nodeId
           groupId
@@ -246,7 +246,11 @@ export default class EventsScreen extends React.Component {
     return (
       <Query
         query={GET_EVENTS}
-        variables={{ minDate: this.minDate, maxDate: this.maxDate }}
+        variables={{
+          minDate: this.minDate,
+          maxDate: this.maxDate,
+          groupId: undefined
+        }}
         notifyOnNetworkStatusChange
       >
         {({ data, error, refetch, loading, fetchMore, networkStatus }) => {

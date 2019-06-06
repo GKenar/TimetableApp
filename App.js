@@ -21,10 +21,13 @@ import EventInfoScreen from "./components/EventInfoScreen";
 import EventDetailsScreen from "./components/EventDetailsScreen";
 import EventsOnDay from "./components/EventsOnDayScreen";
 import AuthLoadingScreen from "./components/AuthLoadingScreen";
+//Вынести запрос
+import { GET_SELECTED_GROUPID } from "./components/GroupSelectForm";
 
 const cache = new InMemoryCache(); //???
 
 // await before instantiating ApolloClient, else queries might run before the cache is persisted
+//Тут раскоментить, чтобы использовать persist cache
 persistCache({
   ///????????????? await?
   cache,
@@ -34,7 +37,7 @@ persistCache({
 // Continue setting up Apollo as usual.
 
 const client = new ApolloClient({
-  //cache, //Тут раскоментить, чтобы использовать persist cache
+  //cache,
   uri: "http://ksa.spsu.ru/graphql",
   // headers: {
   //   Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZGJfYWRtaW4iLCJwZXJzb25faWQiOjE1Mzg3MDA5LCJpYXQiOjE1NTg5NzU0NTAsImV4cCI6MTU1OTA2MTg1MCwiYXVkIjoicG9zdGdyYXBoaWxlIiwiaXNzIjoicG9zdGdyYXBoaWxlIn0.Zl45IBAOCTHanrBLpPojOWaOxjqXRd3ChTNHd5MGVVs"
@@ -48,6 +51,29 @@ const client = new ApolloClient({
           Authorization: `Bearer ${token}`
         }
       });
+  },
+  clientState: {
+    defaults: {
+      selectedGroup: {
+        __typename: "selectedGroup",
+        groupId: -1
+      }
+    },
+    resolvers: {
+      Mutation: {
+        setSelectedGroupId: (_, variables, { cache }) => {
+          const data = {
+            selectedGroup: {
+              __typename: "selectedGroup",
+              groupId: variables.groupId
+            }
+          };
+          cache.writeData({ data });
+
+          return null;
+        }
+      }
+    }
   }
 });
 

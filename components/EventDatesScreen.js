@@ -9,13 +9,18 @@ import gql from "graphql-tag";
 const GET_EVENT_DATES = gql`
   query GetEventDates($eventId: Int!) {
     currentPerson {
+      nodeId
       personInGroupsByPersonId {
         nodes {
+          nodeId
           groupOfPersonByGroupId {
+            nodeId
             abbrName
             eventMembersByParticipant(condition: { eventId: $eventId }) {
               nodes {
+                nodeId
                 eventByEventId {
+                  nodeId
                   name
                   timetablesByEventId {
                     nodes {
