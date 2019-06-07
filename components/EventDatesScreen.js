@@ -39,7 +39,6 @@ const GET_EVENT_DATES = gql`
 `;
 
 function normalizeData(data) {
-  //А если несколько событий на один день?
   const dates = {};
 
   data.nodes.forEach(group => {
@@ -54,8 +53,9 @@ function normalizeData(data) {
         //console.log(time.startTime);
         const date = time.startTime.split("T")[0];
 
-        if (!dates[date]) dates[date] = { selected: true, marked: true };
-        //dates[date].push(time.date);
+        if (!dates[date])
+          dates[date] = { selected: true, marked: true, single: true };
+        else dates[date].single = false;
       }
     );
   });
@@ -85,14 +85,22 @@ export default class EventDatesScreen extends React.Component {
           return (
             <View>
               <Calendar
-                onDayPress={day =>
-                  this.props.navigation.push("EventsOnDayScreen", {
-                    event: {
-                      eventId: event.eventId
-                    },
-                    date: day.dateString
-                  })
-                }
+                onDayPress={day => {
+                  if (!markedDates[day.dateString]) return;
+
+                  if (markedDates[day.dateString].single) {
+                    this.props.navigation.push("EventInfoScreen", {
+                      event: { eventId: event.eventId, timeId: event.timeId }
+                    });
+                  } else {
+                    this.props.navigation.push("EventsOnDayScreen", {
+                      event: {
+                        eventId: event.eventId
+                      },
+                      date: day.dateString
+                    });
+                  }
+                }}
                 style={styles.calendar}
                 hideExtraDays
                 markedDates={markedDates}

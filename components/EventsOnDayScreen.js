@@ -109,7 +109,6 @@ export default class EventsOnDay extends React.Component {
         }}
       >
         {({ data, loading, error }) => {
-          console.log(error);
           if (error) return <Text>Error</Text>;
           if (loading) return <Text>Loading</Text>;
 
