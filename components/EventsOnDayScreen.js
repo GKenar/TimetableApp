@@ -81,7 +81,10 @@ function normalizeData(nodes) {
         //Везде ключи через nodeId!
         timetableByEventId.nodes.forEach(timetable => {
           data.push({
-            id: event.eventByEventId.nodeId + timetable.id + group.groupOfPersonByGroupId.id, //nodeId???
+            id:
+              event.eventByEventId.nodeId +
+              timetable.id +
+              group.groupOfPersonByGroupId.id, //nodeId???
             eventId: event.eventByEventId.id,
             timeId: timetable.id,
             eventName: event.eventByEventId.name,

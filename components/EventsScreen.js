@@ -103,6 +103,10 @@ const normalizeData = (requestedData, startDate, endDate) => {
           }
 
           data[startDateTime[0]].push({
+            id:
+              group.groupOfPersonByGroupId.nodeId +
+              event.eventByEventId.id +
+              time.id,
             eventId: event.eventByEventId.id,
             timeId: time.id,
             name: event.eventByEventId.name,
@@ -447,7 +451,7 @@ export default class EventsScreen extends React.Component {
 
   rowHasChanged(r1, r2) {
     //nodeId????
-    return r1.timeId !== r2.timeId; //???????? Пока тут опасно
+    return r1.id !== r2.id; //???????? Пока тут опасно
   }
 
   renderItem(item) {
