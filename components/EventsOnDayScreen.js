@@ -34,7 +34,7 @@ const GET_EVENTS_ON_DAY = gql`
                     filter: {
                       startTime: {
                         greaterThanOrEqualTo: $startTime
-                        lessThan: $endTime
+                        lessThanOrEqualTo: $endTime
                       }
                     }
                   ) {
