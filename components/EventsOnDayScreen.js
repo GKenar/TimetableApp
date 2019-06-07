@@ -56,6 +56,7 @@ const GET_EVENTS_ON_DAY = gql`
 `;
 
 //Мб эффективнее создавать Date?
+//проверить!
 function dateStringToTimeInterval(dateStr) {
   return {
     start: new Date(`${dateStr}T00:00:00`),
@@ -66,18 +67,22 @@ function dateStringToTimeInterval(dateStr) {
 function normalizeData(nodes) {
   const data = [];
 
-  nodes.forEach(event => {
-    const timetableByEventId = event.eventByEventId.timetablesByEventId;
+  nodes.forEach(group => {
+    group.groupOfPersonByGroupId.eventMembersByParticipant.nodes.forEach(
+      event => {
+        const timetableByEventId = event.eventByEventId.timetablesByEventId;
 
-    timetableByEventId.nodes.forEach(timetable => {
-      data.push({
-        eventId: event.eventByEventId.id,
-        timeId: timetable.id,
-        eventName: event.eventByEventId.name,
-        startTime: timetable.startTime,
-        endTime: timetable.endTime
-      });
-    });
+        timetableByEventId.nodes.forEach(timetable => {
+          data.push({
+            eventId: event.eventByEventId.id,
+            timeId: timetable.id,
+            eventName: event.eventByEventId.name,
+            startTime: timetable.startTime,
+            endTime: timetable.endTime
+          });
+        });
+      }
+    );
   });
 
   return data;
@@ -109,8 +114,7 @@ export default class EventsOnDay extends React.Component {
           if (loading) return <Text>Loading</Text>;
 
           const listOfDayEvents = normalizeData(
-            data.currentPerson.personInGroupsByPersonId.nodes[0]
-              .groupOfPersonByGroupId.eventMembersByParticipant.nodes
+            data.currentPerson.personInGroupsByPersonId.nodes
           );
 
           console.log(listOfDayEvents);

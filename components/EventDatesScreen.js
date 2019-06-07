@@ -38,16 +38,26 @@ const GET_EVENT_DATES = gql`
   }
 `;
 
-function normalizeTimetable(timetable) {
+function normalizeData(data) {
   //А если несколько событий на один день?
   const dates = {};
 
-  timetable.forEach(time => {
-    //console.log(time.startTime);
-    const date = time.startTime.split("T")[0];
+  data.nodes.forEach(group => {
+    if (
+      group.groupOfPersonByGroupId.eventMembersByParticipant.nodes.length === 0
+    )
+      return;
 
-    if (!dates[date]) dates[date] = { selected: true, marked: true };
-    //dates[date].push(time.date);
+    //Тут [0], т.к. событие только одно
+    group.groupOfPersonByGroupId.eventMembersByParticipant.nodes[0].eventByEventId.timetablesByEventId.nodes.forEach(
+      time => {
+        //console.log(time.startTime);
+        const date = time.startTime.split("T")[0];
+
+        if (!dates[date]) dates[date] = { selected: true, marked: true };
+        //dates[date].push(time.date);
+      }
+    );
   });
 
   //console.log(timetable);
@@ -68,10 +78,8 @@ export default class EventDatesScreen extends React.Component {
           if (error) return <Text>Error</Text>;
           if (loading) return <Text>Loading</Text>;
 
-          const markedDates = normalizeTimetable(
-            data.currentPerson.personInGroupsByPersonId.nodes[0]
-              .groupOfPersonByGroupId.eventMembersByParticipant.nodes[0]
-              .eventByEventId.timetablesByEventId.nodes
+          const markedDates = normalizeData(
+            data.currentPerson.personInGroupsByPersonId
           );
 
           return (

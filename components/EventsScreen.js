@@ -253,7 +253,7 @@ export default class EventsScreen extends React.Component {
         }}
         notifyOnNetworkStatusChange
       >
-        {({ data, error, refetch, loading, fetchMore, networkStatus }) => {
+        {({ data, error, refetch, fetchMore, networkStatus }) => {
           if (error) {
             console.log(error);
             return (
@@ -275,15 +275,13 @@ export default class EventsScreen extends React.Component {
               </View>
             );
 
-          //Тут [0]
           const events = normalizeData(
             data.currentPerson.personInGroupsByPersonId,
             new Date(this.minDate),
             new Date(this.maxDate)
-            // this.minDate,
-            // this.maxDate
           );
 
+          //console.log(networkStatus);
           console.log("max: " + this.maxDate);
           console.log("min: " + this.minDate);
 
@@ -336,7 +334,7 @@ export default class EventsScreen extends React.Component {
                   fetchDateIntervalStart = firstDayOfMonth;
                   fetchDateIntervalEnd = this.minDate;
 
-                  //this.minDate = firstDayOfMonth; Перенёс в updateQuery
+                  //this.minDate = firstDayOfMonth; //Перенёс в updateQuery
                   needFetchMore = true;
                 }
                 if (lastDayOfMonth > this.maxDate) {
@@ -448,7 +446,8 @@ export default class EventsScreen extends React.Component {
   }
 
   rowHasChanged(r1, r2) {
-    return r1.timeId !== r2.timeId; //????????
+    //nodeId????
+    return r1.timeId !== r2.timeId; //???????? Пока тут опасно
   }
 
   renderItem(item) {
@@ -457,7 +456,7 @@ export default class EventsScreen extends React.Component {
         <TouchableHighlight
           onPress={() =>
             this.props.navigation.navigate("EventDetailsScreen", {
-              event: item
+              event: { eventId: item.eventId, timeId: item.timeId }
             })
           }
           underlayColor="#FAFAFA"

@@ -88,7 +88,6 @@ export default class EventInfoScreen extends React.Component {
     console.log(event);
 
     if (event === null) return null; //Ошибка
-   
 
     return (
       <View>
