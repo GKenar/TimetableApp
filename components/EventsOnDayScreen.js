@@ -89,8 +89,10 @@ function normalizeData(nodes) {
 }
 
 export default class EventsOnDay extends React.Component {
-  static navigationOptions = {
-    title: "События на ..."
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: `События на ${navigation.getParam("date", "...")}`
+    };
   };
 
   render() {
