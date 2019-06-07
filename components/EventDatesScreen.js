@@ -15,6 +15,7 @@ const GET_EVENT_DATES = gql`
           nodeId
           groupOfPersonByGroupId {
             nodeId
+            id
             abbrName
             eventMembersByParticipant(condition: { eventId: $eventId }) {
               nodes {
@@ -24,6 +25,7 @@ const GET_EVENT_DATES = gql`
                   name
                   timetablesByEventId {
                     nodes {
+                      nodeId
                       startTime
                       endTime
                     }

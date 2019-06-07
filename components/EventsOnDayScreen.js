@@ -21,15 +21,20 @@ const GET_EVENTS_ON_DAY = gql`
     $endTime: Datetime!
   ) {
     currentPerson {
+      nodeId
       personInGroupsByPersonId {
         nodes {
+          nodeId
           groupOfPersonByGroupId {
+            nodeId
+            id
             eventMembersByParticipant(condition: { eventId: $eventId }) {
               nodes {
+                nodeId
                 eventByEventId {
+                  nodeId
                   id
                   name
-                  nodeId
                   timetablesByEventId(
                     filter: {
                       startTime: {
@@ -39,6 +44,7 @@ const GET_EVENTS_ON_DAY = gql`
                     }
                   ) {
                     nodes {
+                      nodeId
                       id
                       startTime
                       endTime
@@ -72,8 +78,10 @@ function normalizeData(nodes) {
       event => {
         const timetableByEventId = event.eventByEventId.timetablesByEventId;
 
+        //Везде ключи через nodeId!
         timetableByEventId.nodes.forEach(timetable => {
           data.push({
+            id: event.eventByEventId.nodeId + timetable.id + group.groupOfPersonByGroupId.id, //nodeId???
             eventId: event.eventByEventId.id,
             timeId: timetable.id,
             eventName: event.eventByEventId.name,
@@ -111,6 +119,7 @@ export default class EventsOnDay extends React.Component {
         }}
       >
         {({ data, loading, error }) => {
+          console.log(error);
           if (error) return <Text>Error</Text>;
           if (loading) return <Text>Loading</Text>;
 
@@ -136,8 +145,7 @@ export default class EventsOnDay extends React.Component {
                   <Text h3>{item.eventName}</Text>
                 </TouchableHighlight>
               )}
-              //eventId повторяется ????
-              keyExtractor={item => item.eventId.toString()}
+              keyExtractor={item => item.id.toString()}
             />
           );
         }}

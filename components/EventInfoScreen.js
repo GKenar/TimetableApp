@@ -12,6 +12,7 @@ import ApolloClient from "apollo-boost";
 import { ApolloProvider, Query, ApolloConsumer, Mutation } from "react-apollo";
 import gql from "graphql-tag";
 
+//Добавить NodeId и id тут и везде
 const GET_EVENT_DETAILS = gql`
   query GetEvent($eventId: Int!, $timetableId: Int!) {
     eventById(id: $eventId) {
