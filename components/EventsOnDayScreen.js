@@ -26,9 +26,9 @@ const GET_EVENTS_ON_DAY = gql`
       personInGroupsByPersonId(condition: { groupId: $groupId }) {
         nodes {
           nodeId
+          groupId
           groupOfPersonByGroupId {
             nodeId
-            id
             abbrName
             eventMembersByParticipant(condition: { eventId: $eventId }) {
               nodes {
@@ -86,7 +86,7 @@ function normalizeData(nodes) {
             id:
               event.eventByEventId.nodeId +
               timetable.id +
-              group.groupOfPersonByGroupId.id, //nodeId???
+              group.groupOfPersonByGroupId.nodeId, //nodeId???
             eventId: event.eventByEventId.id,
             timeId: timetable.id,
             eventName: event.eventByEventId.name,

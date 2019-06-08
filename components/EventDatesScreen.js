@@ -15,9 +15,9 @@ const GET_EVENT_DATES = gql`
       personInGroupsByPersonId(condition: { groupId: $groupId }) {
         nodes {
           nodeId
+          groupId
           groupOfPersonByGroupId {
             nodeId
-            id
             abbrName
             eventMembersByParticipant(condition: { eventId: $eventId }) {
               nodes {
