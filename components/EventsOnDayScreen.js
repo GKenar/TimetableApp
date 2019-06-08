@@ -12,17 +12,18 @@ import { Calendar } from "react-native-calendars";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider, Query, ApolloConsumer, Mutation } from "react-apollo";
 import gql from "graphql-tag";
+import { GET_SELECTED_GROUPID } from "./GroupSelectForm";
 
-//Дата в строке??
 const GET_EVENTS_ON_DAY = gql`
   query GetEventsOnDay(
     $eventId: Int!
+    $groupId: Int
     $startTime: Datetime!
     $endTime: Datetime!
   ) {
     currentPerson {
       nodeId
-      personInGroupsByPersonId {
+      personInGroupsByPersonId(condition: { groupId: $groupId }) {
         nodes {
           nodeId
           groupOfPersonByGroupId {
@@ -113,43 +114,60 @@ export default class EventsOnDay extends React.Component {
     const eventId = this.props.navigation.getParam("event", null).eventId;
 
     return (
-      <Query
-        query={GET_EVENTS_ON_DAY}
-        variables={{
-          eventId,
-          startTime: dateInterval.start,
-          endTime: dateInterval.end
-        }}
-      >
-        {({ data, loading, error }) => {
-          console.log(error);
-          if (error) return <Text>Error</Text>;
-          if (loading) return <Text>Loading</Text>;
-
-          const listOfDayEvents = normalizeData(
-            data.currentPerson.personInGroupsByPersonId.nodes
-          );
-
-          console.log(listOfDayEvents);
+      <Query query={GET_SELECTED_GROUPID}>
+        {({
+          data: { selectedGroup },
+          loading: groupIdLoading,
+          error: groupIdError
+        }) => {
+          if (groupIdError) return null;
+          if (groupIdLoading) return null;
 
           return (
-            <FlatList
-              data={listOfDayEvents}
-              renderItem={({ item }) => (
-                <TouchableHighlight
-                  onPress={() =>
-                    this.props.navigation.push("EventInfoScreen", {
-                      event: { eventId: item.eventId, timeId: item.timeId }
-                    })
-                  }
-                  underlayColor="#FAFAFA"
-                  activeOpacity={0.9}
-                >
-                  <Text h3>{item.eventName}</Text>
-                </TouchableHighlight>
-              )}
-              keyExtractor={item => item.id.toString()}
-            />
+            <Query
+              query={GET_EVENTS_ON_DAY}
+              variables={{
+                eventId,
+                groupId:
+                  selectedGroup.groupId !== -1
+                    ? selectedGroup.groupId
+                    : undefined,
+                startTime: dateInterval.start,
+                endTime: dateInterval.end
+              }}
+            >
+              {({ data, loading, error }) => {
+                if (error) return <Text>Error</Text>;
+                if (loading) return <Text>Loading</Text>;
+
+                const listOfDayEvents = normalizeData(
+                  data.currentPerson.personInGroupsByPersonId.nodes
+                );
+
+                return (
+                  <FlatList
+                    data={listOfDayEvents}
+                    renderItem={({ item }) => (
+                      <TouchableHighlight
+                        onPress={() =>
+                          this.props.navigation.push("EventInfoScreen", {
+                            event: {
+                              eventId: item.eventId,
+                              timeId: item.timeId
+                            }
+                          })
+                        }
+                        underlayColor="#FAFAFA"
+                        activeOpacity={0.9}
+                      >
+                        <Text h3>{item.eventName}</Text>
+                      </TouchableHighlight>
+                    )}
+                    keyExtractor={item => item.id.toString()}
+                  />
+                );
+              }}
+            </Query>
           );
         }}
       </Query>

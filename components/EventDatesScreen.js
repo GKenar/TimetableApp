@@ -4,13 +4,15 @@ import { Text } from "react-native-elements";
 import { Calendar } from "react-native-calendars";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
+import { GET_SELECTED_GROUPID } from "./GroupSelectForm";
 
 //Если слишком много дат одного события?
+//Добавить в запрос параметр groupId
 const GET_EVENT_DATES = gql`
-  query GetEventDates($eventId: Int!) {
+  query GetEventDates($eventId: Int!, $groupId: Int) {
     currentPerson {
       nodeId
-      personInGroupsByPersonId {
+      personInGroupsByPersonId(condition: { groupId: $groupId }) {
         nodes {
           nodeId
           groupOfPersonByGroupId {
@@ -75,46 +77,71 @@ export default class EventDatesScreen extends React.Component {
     const event = this.props.navigation.getParam("event", null);
 
     return (
-      <Query query={GET_EVENT_DATES} variables={{ eventId: event.eventId }}>
-        {({ data, loading, error }) => {
-          if (error) return <Text>Error</Text>;
-          if (loading) return <Text>Loading</Text>;
-
-          const markedDates = normalizeData(
-            data.currentPerson.personInGroupsByPersonId
-          );
+      <Query query={GET_SELECTED_GROUPID}>
+        {({
+          data: { selectedGroup },
+          loading: groupIdLoading,
+          error: groupIdError
+        }) => {
+          if (groupIdError) return null;
+          if (groupIdLoading) return null;
 
           return (
-            <View>
-              <Calendar
-                onDayPress={day => {
-                  if (!markedDates[day.dateString]) return;
+            <Query
+              query={GET_EVENT_DATES}
+              variables={{
+                eventId: event.eventId,
+                groupId:
+                  selectedGroup.groupId !== -1
+                    ? selectedGroup.groupId
+                    : undefined
+              }}
+            >
+              {({ data, loading, error }) => {
+                if (error) return <Text>Error</Text>;
+                if (loading) return <Text>Loading</Text>;
 
-                  if (markedDates[day.dateString].single) {
-                    this.props.navigation.push("EventInfoScreen", {
-                      event: { eventId: event.eventId, timeId: event.timeId }
-                    });
-                  } else {
-                    this.props.navigation.push("EventsOnDayScreen", {
-                      event: {
-                        eventId: event.eventId
-                      },
-                      date: day.dateString
-                    });
-                  }
-                }}
-                style={styles.calendar}
-                hideExtraDays
-                markedDates={markedDates}
-                // markedDates={{
-                //   [this.state.selected]: {
-                //     selected: true,
-                //     disableTouchEvent: true,
-                //     selectedDotColor: "orange"
-                //   }
-                // }}
-              />
-            </View>
+                const markedDates = normalizeData(
+                  data.currentPerson.personInGroupsByPersonId
+                );
+
+                return (
+                  <View>
+                    <Calendar
+                      onDayPress={day => {
+                        if (!markedDates[day.dateString]) return;
+
+                        if (markedDates[day.dateString].single) {
+                          this.props.navigation.push("EventInfoScreen", {
+                            event: {
+                              eventId: event.eventId,
+                              timeId: event.timeId
+                            }
+                          });
+                        } else {
+                          this.props.navigation.push("EventsOnDayScreen", {
+                            event: {
+                              eventId: event.eventId
+                            },
+                            date: day.dateString
+                          });
+                        }
+                      }}
+                      style={styles.calendar}
+                      hideExtraDays
+                      markedDates={markedDates}
+                      // markedDates={{
+                      //   [this.state.selected]: {
+                      //     selected: true,
+                      //     disableTouchEvent: true,
+                      //     selectedDotColor: "orange"
+                      //   }
+                      // }}
+                    />
+                  </View>
+                );
+              }}
+            </Query>
           );
         }}
       </Query>
