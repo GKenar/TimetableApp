@@ -29,6 +29,7 @@ const GET_EVENTS_ON_DAY = gql`
           groupOfPersonByGroupId {
             nodeId
             id
+            abbrName
             eventMembersByParticipant(condition: { eventId: $eventId }) {
               nodes {
                 nodeId
@@ -90,7 +91,8 @@ function normalizeData(nodes) {
             timeId: timetable.id,
             eventName: event.eventByEventId.name,
             startTime: timetable.startTime,
-            endTime: timetable.endTime
+            endTime: timetable.endTime,
+            groupAbbr: group.groupOfPersonByGroupId.abbrName
           });
         });
       }
@@ -160,7 +162,9 @@ export default class EventsOnDay extends React.Component {
                         underlayColor="#FAFAFA"
                         activeOpacity={0.9}
                       >
-                        <Text h3>{item.eventName}</Text>
+                        <Text h4>{`${item.eventName} |${item.groupAbbr}| ${
+                          item.startTime
+                        }-${item.endTime}`}</Text>
                       </TouchableHighlight>
                     )}
                     keyExtractor={item => item.id.toString()}
