@@ -6,7 +6,8 @@ import {
   Text,
   Button,
   SocialIcon,
-  Divider
+  Divider,
+  Badge
 } from "react-native-elements";
 import { Calendar } from "react-native-calendars";
 import ApolloClient from "apollo-boost";
@@ -151,6 +152,7 @@ export default class EventsOnDay extends React.Component {
                     data={listOfDayEvents}
                     renderItem={({ item }) => (
                       <TouchableHighlight
+                        style={{ marginBottom: 10 }}
                         onPress={() =>
                           this.props.navigation.push("EventInfoScreen", {
                             event: {
@@ -162,9 +164,31 @@ export default class EventsOnDay extends React.Component {
                         underlayColor="#FAFAFA"
                         activeOpacity={0.9}
                       >
-                        <Text h4>{`${item.eventName} |${item.groupAbbr}| ${
-                          item.startTime
-                        }-${item.endTime}`}</Text>
+                        <View>
+                          <View
+                            style={{
+                              flex: 1,
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              alignItems: "center"
+                            }}
+                          >
+                            <Text h4>
+                              {item.startTime.split("T")[1]}-
+                              {item.endTime.split("T")[1]}
+                            </Text>
+                            <Badge
+                              style={{ margin: 20 }}
+                              value={
+                                <Text h4 style={{ color: "white", margin: 10 }}>
+                                  {item.groupAbbr}
+                                </Text>
+                              }
+                            />
+                          </View>
+                          <Text h4>{item.eventName}</Text>
+                          <Divider />
+                        </View>
                       </TouchableHighlight>
                     )}
                     keyExtractor={item => item.id.toString()}

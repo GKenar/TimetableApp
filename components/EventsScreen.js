@@ -6,7 +6,8 @@ import {
   Text,
   Button,
   SocialIcon,
-  Divider
+  Divider,
+  Badge
 } from "react-native-elements";
 import { Agenda } from "react-native-calendars";
 import { Query, ApolloConsumer, Mutation } from "react-apollo";
@@ -478,14 +479,20 @@ export default class EventsScreen extends React.Component {
               <Text style={{ textAlign: "left", fontSize: 20 }}>{`${
                 item.startTime
               } - ${item.endTime}`}</Text>
-              <Text
-                style={{
-                  textAlign: "right",
-                  fontSize: 20
-                }}
-              >
-                {item.groupAbbr}
-              </Text>
+              <Badge
+                style={{ margin: 20 }}
+                value={
+                  <Text
+                    style={{
+                      color: "white",
+                      margin: 10,
+                      fontSize: 20
+                    }}
+                  >
+                    {item.groupAbbr}
+                  </Text>
+                }
+              />
             </View>
             <Text
               style={{
