@@ -16,13 +16,16 @@ import gql from "graphql-tag";
 const GET_EVENT_DETAILS = gql`
   query GetEvent($eventId: Int!, $timetableId: Int!) {
     eventById(id: $eventId) {
+      nodeId
       id
       name
       timetablesByEventId(condition: { id: $timetableId }) {
         nodes {
+          nodeId
           startTime
           endTime
           placeByPlaceId {
+            nodeId
             name
           }
         }
