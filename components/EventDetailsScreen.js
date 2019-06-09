@@ -10,18 +10,19 @@ const TabNavigator = createBottomTabNavigator(
     EventDatesScreen: EventDatesScreen
   },
   {
-    defaultNavigationOptions: ({ navigation }) => ({ //Настроить!!!!!!
+    defaultNavigationOptions: ({ navigation }) => ({
+      //Настроить!!!!!!
       tabBarIcon: ({ focused, horizontal, tintColor }) => {
         const { routeName } = navigation.state;
         let IconComponent = Ionicons;
         let iconName;
-        if (routeName === "Home") {
+        if (routeName === "EventInfoScreen") {
           iconName = `ios-information-circle${focused ? "" : "-outline"}`;
           // Sometimes we want to add badges to some icons.
           // You can check the implementation below.
-          IconComponent = HomeIconWithBadge;
-        } else if (routeName === "Settings") {
-          iconName = `ios-options`;
+          //IconComponent = HomeIconWithBadge;
+        } else if (routeName === "EventDatesScreen") {
+          iconName = `ios-calendar`;
         }
 
         // You can return any component that you like here!
@@ -30,7 +31,8 @@ const TabNavigator = createBottomTabNavigator(
     }),
     tabBarOptions: {
       activeTintColor: "tomato",
-      inactiveTintColor: "gray"
+      inactiveTintColor: "gray",
+      labelStyle: { fontSize: 15 }
     }
   }
 );
