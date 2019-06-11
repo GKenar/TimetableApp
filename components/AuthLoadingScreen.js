@@ -31,9 +31,10 @@ export default class AuthLoadingScreen extends React.Component {
 
   render() {
     return (
-      <View>
+      <View
+        style={{ flex: 1, justifyContent: "center", alignContent: "center" }}
+      >
         <ActivityIndicator />
-        {/* <StatusBar barStyle="default" /> */}
       </View>
     );
   }
