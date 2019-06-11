@@ -44,7 +44,7 @@ export default class GroupSelectForm extends React.Component {
             console.log(error);
             return <Text>Error</Text>;
           }
-          if (loading) return <Text>Loading...</Text>;
+          if (loading) return <Text>Загрузка перечня групп...</Text>;
 
           console.log(data);
 
@@ -71,6 +71,7 @@ export default class GroupSelectForm extends React.Component {
                               }
                             });
                           }}
+                          itemStyle={{ fontSize: 12, color: "yellow" }}
                         >
                           <Picker.Item key={"All"} label="Все" value={-1} />
                           {data.currentPerson.personInGroupsByPersonId.nodes.map(
@@ -83,27 +84,6 @@ export default class GroupSelectForm extends React.Component {
                             )
                           )}
                         </Picker>
-                        {/* <FlatList
-                          data={
-                            data.currentPerson.personInGroupsByPersonId.nodes
-                          }
-                          renderItem={({ item }) => (
-                            <Button
-                              key
-                              title={item.groupOfPersonByGroupId.abbrName}
-                              onPress={() =>
-                                setGroupId({
-                                  variables: {
-                                    groupId: item.groupOfPersonByGroupId.id
-                                  }
-                                })
-                              }
-                            />
-                          )}
-                          keyExtractor={item =>
-                            item.groupOfPersonByGroupId.nodeId.toString()
-                          }
-                        /> */}
                       </View>
                     )}
                   </Mutation>

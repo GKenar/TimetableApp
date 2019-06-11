@@ -22,22 +22,22 @@ export default class OptionsScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text h3 style={{ textAlign: "center" }}>
-          Настройки
-        </Text>
-        <Divider style={{ height: 2, margin: 10 }} />
-        <Button
-          title="Log out"
-          buttonStyle={{ backgroundColor: "red" }}
-          //Нужно очищать кэш
-          onPress={() =>
-            AsyncStorage.removeItem("userToken").then(() =>
-              this.props.navigation.navigate("Auth")
-            )
-          }
-        />
         {/* Вынести в отдельный модуль взаимодействие с AsyncStore */}
+        <Text h4>Фильтр по группам: </Text>
         <GroupSelectForm />
+        <Divider style={{ height: 2, margin: 10 }} />
+        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+          <Button
+            title="Log out"
+            buttonStyle={{ backgroundColor: "red" }}
+            //Нужно очищать кэш
+            onPress={() =>
+              AsyncStorage.removeItem("userToken").then(() =>
+                this.props.navigation.navigate("Auth")
+              )
+            }
+          />
+        </View>
       </View>
     );
   }
