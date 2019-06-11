@@ -75,7 +75,7 @@ class AuthForm extends React.Component {
     super(props);
 
     this.state = {
-      userLogin: "", //Не имя, а логин
+      userLogin: "pustovalov", //Не имя, а логин
       userPassword: "",
       handling: false,
       invalidUser: false
@@ -124,6 +124,7 @@ class AuthForm extends React.Component {
             <Input
               placeholder="Password"
               shake={true}
+              secureTextEntry={true}
               inputContainerStyle={{ marginBottom: 30 }}
               leftIcon={
                 <Icon name="lock" type={"simple-line-icon"} size={32} />
