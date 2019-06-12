@@ -1,11 +1,6 @@
 import React from "react";
-import {
-  ActivityIndicator,
-  AsyncStorage,
-  StatusBar,
-  StyleSheet,
-  View
-} from "react-native";
+import LoadingIndicator from "./LoadingIndicator";
+import { getToken } from "./managmentFunctions";
 
 export default class AuthLoadingScreen extends React.Component {
   constructor(props) {
@@ -20,7 +15,7 @@ export default class AuthLoadingScreen extends React.Component {
     //
     //await AsyncStorage.setItem("userToken", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZGJfYWRtaW4iLCJwZXJzb25faWQiOjE1Mzg3MDA5LCJpYXQiOjE1NTg5NzU0NTAsImV4cCI6MTU1OTA2MTg1MCwiYXVkIjoicG9zdGdyYXBoaWxlIiwiaXNzIjoicG9zdGdyYXBoaWxlIn0.Zl45IBAOCTHanrBLpPojOWaOxjqXRd3ChTNHd5MGVVd");
 
-    const userToken = await AsyncStorage.getItem("userToken");
+    const userToken = await getToken();
 
     //Приостоновочка
     setTimeout(
@@ -30,12 +25,6 @@ export default class AuthLoadingScreen extends React.Component {
   };
 
   render() {
-    return (
-      <View
-        style={{ flex: 1, justifyContent: "center", alignContent: "center" }}
-      >
-        <ActivityIndicator />
-      </View>
-    );
+    return <LoadingIndicator />;
   }
 }

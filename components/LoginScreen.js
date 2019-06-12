@@ -9,16 +9,7 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Input, Header, Text, Button, SocialIcon } from "react-native-elements";
 import { Mutation, Query } from "react-apollo";
-import gql from "graphql-tag";
-
-const AUTH = gql`
-  mutation Authentification($login: String!, $password: String!) {
-    authenticate(input: { login: $login, password: $password }) {
-      clientMutationId
-      jwtToken
-    }
-  }
-`;
+import { AUTH } from "./queries";
 
 // const TEST_QUERY = gql`
 //   query {

@@ -82,12 +82,12 @@ const AppNavigator = createStackNavigator(
     Main: MainScreen,
     EventInfoScreen: EventInfoScreen,
     EventDetailsScreen: EventDetailsScreen,
-    Options: OptionsScreen,
-    TestScreen: TestScreen,
-    GroupsScreen: GroupsScreen,
-    GroupDetailsScreen: GroupDetailsScreen,
+    Options: OptionsScreen
+    //TestScreen: TestScreen,
+    //GroupsScreen: GroupsScreen,
+    //GroupDetailsScreen: GroupDetailsScreen,
     //TEST!
-    EventsOnDayScreen: EventsOnDay
+    //EventsOnDayScreen: EventsOnDay
   },
   {
     initialRouteName: "Main",

@@ -14,51 +14,7 @@ import { Query, ApolloConsumer, Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import lodash from "lodash";
 import calendarLocalization from "./calendarLocalization"; //???
-
-const GET_EVENTS = gql`
-  query GetEvents($minDate: Datetime!, $maxDate: Datetime!, $groupId: Int) {
-    currentPerson {
-      nodeId
-      personInGroupsByPersonId(condition: { groupId: $groupId }) {
-        nodes {
-          nodeId
-          groupId
-          groupOfPersonByGroupId {
-            nodeId
-            abbrName
-            eventMembersByParticipant {
-              nodes {
-                nodeId
-                eventByEventId {
-                  nodeId
-                  id
-                  name
-                  timetablesByEventId(
-                    filter: {
-                      startTime: {
-                        greaterThanOrEqualTo: $minDate
-                        lessThanOrEqualTo: $maxDate
-                      }
-                    }
-                    condition: {}
-                  ) {
-                    nodes {
-                      nodeId
-                      id
-                      startTime
-                      endTime
-                      placeId
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+import { GET_EVENTS } from "./queries";
 
 function daysInMonth(month, year) {
   const days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -258,7 +214,7 @@ export default class EventsScreen extends React.Component {
         }}
         notifyOnNetworkStatusChange
       >
-        {({ data, error, refetch, fetchMore, networkStatus }) => {
+        {({ data, error, refetch, fetchMore, networkStatus, loading }) => {
           if (error) {
             console.log(error);
             return (
@@ -279,6 +235,11 @@ export default class EventsScreen extends React.Component {
                 <Text>Loading</Text>
               </View>
             );
+
+          if (data.currentPerson === undefined) {
+            console.log("status:");
+            console.log(networkStatus);
+          }
 
           const events = normalizeData(
             data.currentPerson.personInGroupsByPersonId,
@@ -357,7 +318,9 @@ export default class EventsScreen extends React.Component {
                 fetchMore({
                   variables: {
                     minDate: fetchDateIntervalStart,
-                    maxDate: fetchDateIntervalEnd
+                    maxDate: fetchDateIntervalEnd,
+                    groupId:
+                      this.props.groupId !== -1 ? this.props.groupId : undefined
                   },
                   updateQuery: (prev, { fetchMoreResult, variables }) => {
                     if (variables.minDate < this.minDate) {

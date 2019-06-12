@@ -8,31 +8,8 @@ import {
   SocialIcon,
   Divider
 } from "react-native-elements";
-import ApolloClient from "apollo-boost";
-import { ApolloProvider, Query, ApolloConsumer, Mutation } from "react-apollo";
-import gql from "graphql-tag";
-
-//Добавить NodeId и id тут и везде
-const GET_EVENT_DETAILS = gql`
-  query GetEvent($eventId: Int!, $timetableId: Int!) {
-    eventById(id: $eventId) {
-      nodeId
-      id
-      name
-      timetablesByEventId(condition: { id: $timetableId }) {
-        nodes {
-          nodeId
-          startTime
-          endTime
-          placeByPlaceId {
-            nodeId
-            name
-          }
-        }
-      }
-    }
-  }
-`;
+import { Query } from "react-apollo";
+import { GET_EVENT_DETAILS } from "./queries";
 
 const EventDescription = ({ eventId, timetableId }) => (
   <Query query={GET_EVENT_DETAILS} variables={{ eventId, timetableId }}>
@@ -41,8 +18,6 @@ const EventDescription = ({ eventId, timetableId }) => (
       if (loading) return <Text>Loading</Text>;
 
       const event = data.eventById;
-
-      //console.log(event);
 
       return (
         <View>
@@ -88,8 +63,6 @@ export default class EventInfoScreen extends React.Component {
   render() {
     const { navigation } = this.props;
     const event = navigation.getParam("event", null);
-
-    console.log(event);
 
     if (event === null) return null; //Ошибка
 

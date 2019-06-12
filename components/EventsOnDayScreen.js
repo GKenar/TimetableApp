@@ -11,58 +11,8 @@ import {
 } from "react-native-elements";
 import { Calendar } from "react-native-calendars";
 import ApolloClient from "apollo-boost";
-import { ApolloProvider, Query, ApolloConsumer, Mutation } from "react-apollo";
-import gql from "graphql-tag";
-import { GET_SELECTED_GROUPID } from "./GroupSelectForm";
-
-const GET_EVENTS_ON_DAY = gql`
-  query GetEventsOnDay(
-    $eventId: Int!
-    $groupId: Int
-    $startTime: Datetime!
-    $endTime: Datetime!
-  ) {
-    currentPerson {
-      nodeId
-      personInGroupsByPersonId(condition: { groupId: $groupId }) {
-        nodes {
-          nodeId
-          groupId
-          groupOfPersonByGroupId {
-            nodeId
-            abbrName
-            eventMembersByParticipant(condition: { eventId: $eventId }) {
-              nodes {
-                nodeId
-                eventByEventId {
-                  nodeId
-                  id
-                  name
-                  timetablesByEventId(
-                    filter: {
-                      startTime: {
-                        greaterThanOrEqualTo: $startTime
-                        lessThanOrEqualTo: $endTime
-                      }
-                    }
-                  ) {
-                    nodes {
-                      nodeId
-                      id
-                      startTime
-                      endTime
-                      placeId
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+import { Query } from "react-apollo";
+import { GET_EVENTS_ON_DAY, GET_SELECTED_GROUPID } from "./queries";
 
 //Мб эффективнее создавать Date?
 //проверить!

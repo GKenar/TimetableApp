@@ -2,38 +2,11 @@ import React from "react";
 import { StyleSheet, View, FlatList, Picker } from "react-native";
 import { Text, Button, Divider } from "react-native-elements";
 import { Query, ApolloConsumer, Mutation } from "react-apollo";
-import gql from "graphql-tag";
-
-const GET_GROUPS_LIST = gql`
-  query GetGroupsList {
-    currentPerson {
-      nodeId
-      personInGroupsByPersonId {
-        nodes {
-          nodeId
-          groupOfPersonByGroupId {
-            nodeId
-            id
-            abbrName
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const GET_SELECTED_GROUPID = gql`
-  {
-    selectedGroup {
-      groupId
-    }
-  }
-`;
-const SET_SELECTED_GROUPID = gql`
-  mutation SetSelectedGroupId($groupId: Int!) {
-    setSelectedGroupId(groupId: $groupId) @client
-  }
-`;
+import {
+  SET_SELECTED_GROUPID,
+  GET_SELECTED_GROUPID,
+  GET_GROUPS_LIST
+} from "./queries";
 
 export default class GroupSelectForm extends React.Component {
   render() {
@@ -54,7 +27,7 @@ export default class GroupSelectForm extends React.Component {
                 if (loading2) return null;
                 if (error2) return null;
 
-                console.log(dataa);
+                //console.log(dataa);
 
                 return (
                   <Mutation mutation={SET_SELECTED_GROUPID}>

@@ -18,14 +18,10 @@ const TabNavigator = createBottomTabNavigator(
         let iconName;
         if (routeName === "EventInfoScreen") {
           iconName = `ios-information-circle${focused ? "" : "-outline"}`;
-          // Sometimes we want to add badges to some icons.
-          // You can check the implementation below.
-          //IconComponent = HomeIconWithBadge;
         } else if (routeName === "EventDatesScreen") {
           iconName = `ios-calendar`;
         }
 
-        // You can return any component that you like here!
         return <IconComponent name={iconName} size={25} color={tintColor} />;
       }
     }),

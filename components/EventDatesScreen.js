@@ -3,44 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-elements";
 import { Calendar } from "react-native-calendars";
 import { Query } from "react-apollo";
-import gql from "graphql-tag";
-import { GET_SELECTED_GROUPID } from "./GroupSelectForm";
-
-//Если слишком много дат одного события?
-//Добавить в запрос параметр groupId
-const GET_EVENT_DATES = gql`
-  query GetEventDates($eventId: Int!, $groupId: Int) {
-    currentPerson {
-      nodeId
-      personInGroupsByPersonId(condition: { groupId: $groupId }) {
-        nodes {
-          nodeId
-          groupId
-          groupOfPersonByGroupId {
-            nodeId
-            abbrName
-            eventMembersByParticipant(condition: { eventId: $eventId }) {
-              nodes {
-                nodeId
-                eventByEventId {
-                  nodeId
-                  name
-                  timetablesByEventId {
-                    nodes {
-                      nodeId
-                      startTime
-                      endTime
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+import { GET_EVENT_DATES, GET_SELECTED_GROUPID } from "./queries";
 
 function normalizeData(data) {
   const dates = {};
