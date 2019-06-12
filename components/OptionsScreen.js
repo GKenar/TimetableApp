@@ -29,7 +29,9 @@ export default class OptionsScreen extends React.Component {
           <Button
             title="Log out"
             buttonStyle={{ backgroundColor: "red" }}
-            onPress={logOut}
+            onPress={() =>
+              logOut().then(() => this.props.navigation.navigate("Auth"))
+            }
           />
         </View>
       </View>

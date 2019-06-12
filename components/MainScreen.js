@@ -1,9 +1,10 @@
 import React from "react";
-import { Text, Button } from "react-native-elements";
+import { Button } from "react-native-elements";
 import EventsScreen from "./EventsScreen";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Query } from "react-apollo";
-import { GET_SELECTED_GROUPID } from "./GroupSelectForm";
+import { GET_SELECTED_GROUPID } from "../queries/getSelectedGroupId";
+import gql from "graphql-tag";
 
 export default class MainScreen extends React.Component {
   constructor(props) {
@@ -25,7 +26,7 @@ export default class MainScreen extends React.Component {
 
   render() {
     return (
-      <Query query={GET_SELECTED_GROUPID}>
+      <Query query={gql(GET_SELECTED_GROUPID)}>
         {({ data, loading, error }) => {
           if (error) return null;
           if (loading) return null;

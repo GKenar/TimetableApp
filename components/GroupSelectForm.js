@@ -2,16 +2,15 @@ import React from "react";
 import { StyleSheet, View, FlatList, Picker } from "react-native";
 import { Text, Button, Divider } from "react-native-elements";
 import { Query, ApolloConsumer, Mutation } from "react-apollo";
-import {
-  SET_SELECTED_GROUPID,
-  GET_SELECTED_GROUPID,
-  GET_GROUPS_LIST
-} from "./queries";
+import { GET_SELECTED_GROUPID } from "../queries/getSelectedGroupId";
+import { SET_SELECTED_GROUPID } from "../queries/setSelectedGroupId";
+import { GET_GROUPS_LIST } from "../queries/getGroupsList";
+import gql from "graphql-tag";
 
 export default class GroupSelectForm extends React.Component {
   render() {
     return (
-      <Query query={GET_GROUPS_LIST}>
+      <Query query={gql(GET_GROUPS_LIST)}>
         {({ data, loading, error }) => {
           if (error) {
             console.log(error);
@@ -22,7 +21,7 @@ export default class GroupSelectForm extends React.Component {
           console.log(data);
 
           return (
-            <Query query={GET_SELECTED_GROUPID}>
+            <Query query={gql(GET_SELECTED_GROUPID)}>
               {({ data: dataa, loading: loading2, error: error2 }) => {
                 if (loading2) return null;
                 if (error2) return null;
@@ -30,7 +29,7 @@ export default class GroupSelectForm extends React.Component {
                 //console.log(dataa);
 
                 return (
-                  <Mutation mutation={SET_SELECTED_GROUPID}>
+                  <Mutation mutation={gql(SET_SELECTED_GROUPID)}>
                     {setGroupId => (
                       <View>
                         <Picker

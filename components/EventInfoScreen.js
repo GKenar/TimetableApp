@@ -1,18 +1,12 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
-import {
-  Input,
-  Header,
-  Text,
-  Button,
-  SocialIcon,
-  Divider
-} from "react-native-elements";
+import { View } from "react-native";
+import { Text, Divider } from "react-native-elements";
 import { Query } from "react-apollo";
-import { GET_EVENT_DETAILS } from "./queries";
+import { GET_EVENT_DETAILS } from "../queries/getEventDetails";
+import gql from "graphql-tag";
 
 const EventDescription = ({ eventId, timetableId }) => (
-  <Query query={GET_EVENT_DETAILS} variables={{ eventId, timetableId }}>
+  <Query query={gql(GET_EVENT_DETAILS)} variables={{ eventId, timetableId }}>
     {({ data, loading, error }) => {
       if (error) return <Text>Error</Text>;
       if (loading) return <Text>Loading</Text>;

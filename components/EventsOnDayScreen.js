@@ -1,18 +1,10 @@
 import React from "react";
-import { StyleSheet, View, FlatList, TouchableHighlight } from "react-native";
-import {
-  Input,
-  Header,
-  Text,
-  Button,
-  SocialIcon,
-  Divider,
-  Badge
-} from "react-native-elements";
-import { Calendar } from "react-native-calendars";
-import ApolloClient from "apollo-boost";
+import { View, FlatList, TouchableHighlight } from "react-native";
+import { Text, Divider, Badge } from "react-native-elements";
 import { Query } from "react-apollo";
-import { GET_EVENTS_ON_DAY, GET_SELECTED_GROUPID } from "./queries";
+import { GET_SELECTED_GROUPID } from "../queries/getSelectedGroupId";
+import { GET_EVENTS_ON_DAY } from "../queries/getEventsOnDay";
+import gql from "graphql-tag";
 
 //Мб эффективнее создавать Date?
 //проверить!
@@ -67,7 +59,7 @@ export default class EventsOnDay extends React.Component {
     const eventId = this.props.navigation.getParam("event", null).eventId;
 
     return (
-      <Query query={GET_SELECTED_GROUPID}>
+      <Query query={gql(GET_SELECTED_GROUPID)}>
         {({
           data: { selectedGroup },
           loading: groupIdLoading,
@@ -78,7 +70,7 @@ export default class EventsOnDay extends React.Component {
 
           return (
             <Query
-              query={GET_EVENTS_ON_DAY}
+              query={gql(GET_EVENTS_ON_DAY)}
               variables={{
                 eventId,
                 groupId:

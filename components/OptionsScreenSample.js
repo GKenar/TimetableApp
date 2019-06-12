@@ -1,9 +1,6 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { createStackNavigator } from "react-navigation";
 import {
-  Input,
-  Header,
   Text,
   Button,
   Slider,

@@ -9,26 +9,9 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Input, Header, Text, Button, SocialIcon } from "react-native-elements";
 import { Mutation, Query } from "react-apollo";
-import { AUTH } from "./queries";
-
-// const TEST_QUERY = gql`
-//   query {
-//     allAccounts {
-//       nodes {
-//         login
-//       }
-//     }
-//   }
-// `;
-
-// const TestQuery = () => (
-//   <Query query={TEST_QUERY}>
-//     {({ data, error, loading }) => {
-//       if (!loading) console.log(data);
-//       return null;
-//     }}
-//   </Query>
-// );
+import { AUTH } from "../queries/authentification";
+import { writeToken } from "./managmentFunctions";
+import gql from "graphql-tag";
 
 //Сделать, чтобы не исчезала, а становилась невидимой или что-то подобное
 class ErrorForm extends React.Component {
@@ -76,16 +59,14 @@ class AuthForm extends React.Component {
   render() {
     return (
       <Mutation
-        mutation={AUTH}
+        mutation={gql(AUTH)}
         update={(cache, { data }) => {
           console.log(data);
           const token = data.authenticate.jwtToken;
           if (token) {
-            //Токен null в самом начале
             console.log("Writing to store... " + token);
 
-            //Можно вынести обращения к store в отдельный модуль
-            AsyncStorage.setItem("userToken", token).then(() => {
+            writeToken(token).then(() => {
               this.props.navigation.navigate("App");
             });
           } else {

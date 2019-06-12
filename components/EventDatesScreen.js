@@ -3,7 +3,9 @@ import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-elements";
 import { Calendar } from "react-native-calendars";
 import { Query } from "react-apollo";
-import { GET_EVENT_DATES, GET_SELECTED_GROUPID } from "./queries";
+import { GET_EVENT_DATES } from "../queries/getEventDates";
+import { GET_SELECTED_GROUPID } from "../queries/getSelectedGroupId";
+import gql from "graphql-tag";
 
 function normalizeData(data) {
   const dates = {};
@@ -40,7 +42,7 @@ export default class EventDatesScreen extends React.Component {
     const event = this.props.navigation.getParam("event", null);
 
     return (
-      <Query query={GET_SELECTED_GROUPID}>
+      <Query query={gql(GET_SELECTED_GROUPID)}>
         {({
           data: { selectedGroup },
           loading: groupIdLoading,
@@ -51,7 +53,7 @@ export default class EventDatesScreen extends React.Component {
 
           return (
             <Query
-              query={GET_EVENT_DATES}
+              query={gql(GET_EVENT_DATES)}
               variables={{
                 eventId: event.eventId,
                 groupId:

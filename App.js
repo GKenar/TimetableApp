@@ -3,26 +3,20 @@ import { StyleSheet, Text, View } from "react-native";
 import {
   createStackNavigator,
   createAppContainer,
-  createSwitchNavigator,
-  createDrawerNavigator
+  createSwitchNavigator
 } from "react-navigation";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "react-apollo";
 import { AsyncStorage } from "react-native";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { persistCache } from "apollo-cache-persist";
-import GroupsScreen from "./components/GroupsScreen";
-import GroupDetailsScreen from "./components/GroupDetailsScreen";
 import MainScreen from "./components/MainScreen";
 import LoginScreen from "./components/LoginScreen";
 import OptionsScreen from "./components/OptionsScreen";
-import TestScreen from "./components/TestScreen";
 import EventInfoScreen from "./components/EventInfoScreen";
 import EventDetailsScreen from "./components/EventDetailsScreen";
-import EventsOnDay from "./components/EventsOnDayScreen";
+import EventsOnDayScreen from "./components/EventsOnDayScreen";
 import AuthLoadingScreen from "./components/AuthLoadingScreen";
-//Вынести запрос
-import { GET_SELECTED_GROUPID } from "./components/GroupSelectForm";
 
 const cache = new InMemoryCache(); //???
 
@@ -82,12 +76,8 @@ const AppNavigator = createStackNavigator(
     Main: MainScreen,
     EventInfoScreen: EventInfoScreen,
     EventDetailsScreen: EventDetailsScreen,
-    Options: OptionsScreen
-    //TestScreen: TestScreen,
-    //GroupsScreen: GroupsScreen,
-    //GroupDetailsScreen: GroupDetailsScreen,
-    //TEST!
-    //EventsOnDayScreen: EventsOnDay
+    Options: OptionsScreen,
+    EventsOnDayScreen: EventsOnDayScreen
   },
   {
     initialRouteName: "Main",

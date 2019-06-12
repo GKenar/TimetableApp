@@ -1,40 +1,14 @@
 import React from "react";
 import { StyleSheet, View, TouchableHighlight } from "react-native";
-import {
-  Input,
-  Header,
-  Text,
-  Button,
-  SocialIcon,
-  Divider,
-  Badge
-} from "react-native-elements";
+import { Text, Button, Divider, Badge } from "react-native-elements";
 import { Agenda } from "react-native-calendars";
-import { Query, ApolloConsumer, Mutation } from "react-apollo";
-import gql from "graphql-tag";
+import { Query } from "react-apollo";
 import lodash from "lodash";
 import calendarLocalization from "./calendarLocalization"; //???
-import { GET_EVENTS } from "./queries";
-
-function daysInMonth(month, year) {
-  const days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  const daysLeap = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-  return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
-    ? daysLeap[month]
-    : days[month];
-}
-
-function addDays(date, days) {
-  var result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
-}
-
-//Можно вынести в отдельный модуль
-function dateToYMD(date) {
-  return date.toISOString().split("T")[0];
-}
+import { GET_EVENTS } from "../queries/getEvents";
+import { daysInMonth, dateToYMD, addDays } from "./dateFunctions";
+import LoadingIndicator from "./LoadingIndicator";
+import gql from "graphql-tag";
 
 //Приводит данные с сервера в пригодный для agenda вид
 const normalizeData = (requestedData, startDate, endDate) => {
@@ -206,7 +180,7 @@ export default class EventsScreen extends React.Component {
   render() {
     return (
       <Query
-        query={GET_EVENTS}
+        query={gql(GET_EVENTS)}
         variables={{
           minDate: this.minDate,
           maxDate: this.maxDate,
@@ -214,7 +188,7 @@ export default class EventsScreen extends React.Component {
         }}
         notifyOnNetworkStatusChange
       >
-        {({ data, error, refetch, fetchMore, networkStatus, loading }) => {
+        {({ data, error, refetch, fetchMore, networkStatus }) => {
           if (error) {
             console.log(error);
             return (
@@ -229,12 +203,7 @@ export default class EventsScreen extends React.Component {
               </View>
             );
           }
-          if (networkStatus === 1)
-            return (
-              <View>
-                <Text>Loading</Text>
-              </View>
-            );
+          if (networkStatus === 1) return <LoadingIndicator />;
 
           if (data.currentPerson === undefined) {
             console.log("status:");
@@ -287,10 +256,6 @@ export default class EventsScreen extends React.Component {
                   1
                 );
 
-                //console.log(date);
-                //console.log(firstDayOfMonth);
-                //console.log(lastDayOfMonth);
-
                 //Когда дергаешь быстро календарь, то не загружаются события
                 let fetchDateIntervalStart;
                 let fetchDateIntervalEnd;
@@ -300,14 +265,12 @@ export default class EventsScreen extends React.Component {
                   fetchDateIntervalStart = firstDayOfMonth;
                   fetchDateIntervalEnd = this.minDate;
 
-                  //this.minDate = firstDayOfMonth; //Перенёс в updateQuery
                   needFetchMore = true;
                 }
                 if (lastDayOfMonth > this.maxDate) {
                   fetchDateIntervalStart = this.maxDate;
                   fetchDateIntervalEnd = lastDayOfMonth;
 
-                  //this.maxDate = lastDayOfMonth;
                   needFetchMore = true;
                 }
 
@@ -333,57 +296,7 @@ export default class EventsScreen extends React.Component {
 
                     if (!fetchMoreResult) return prev;
 
-                    //Опасный момент
-                    const groups = [];
-
-                    prev.currentPerson.personInGroupsByPersonId.nodes.forEach(
-                      (item, index) => {
-                        const combination = unionEvents(
-                          prev.currentPerson.personInGroupsByPersonId.nodes[
-                            index
-                          ].groupOfPersonByGroupId.eventMembersByParticipant
-                            .nodes,
-                          fetchMoreResult.currentPerson.personInGroupsByPersonId
-                            .nodes[index].groupOfPersonByGroupId
-                            .eventMembersByParticipant.nodes
-                        );
-
-                        groups[index] = {
-                          groupOfPersonByGroupId: {
-                            eventMembersByParticipant: {
-                              nodes: combination,
-                              __typename: "EventMembersConnection"
-                            },
-                            __typename: "GroupOfPerson",
-                            nodeId: item.groupOfPersonByGroupId.nodeId,
-                            abbrName: item.groupOfPersonByGroupId.abbrName
-                          },
-                          __typename: "PersonInGroup",
-                          nodeId: item.nodeId,
-                          groupId: item.groupId
-                        };
-                      }
-                    );
-
-                    // const combination = unionEvents(
-                    //   prev.currentPerson.personInGroupsByPersonId.nodes[0]
-                    //     .groupOfPersonByGroupId.eventMembersByParticipant.nodes,
-                    //   fetchMoreResult.currentPerson.personInGroupsByPersonId
-                    //     .nodes[0].groupOfPersonByGroupId
-                    //     .eventMembersByParticipant.nodes
-                    // );
-
-                    const result = {
-                      currentPerson: {
-                        personInGroupsByPersonId: {
-                          nodes: groups,
-                          __typename: "PersonInGroupsConnection"
-                        },
-                        __typename: "Person",
-                        nodeId: prev.currentPerson.nodeId
-                      }
-                    };
-                    return result;
+                    return this.unionQueryResults(prev, fetchMoreResult);
                   }
                 });
               }}
@@ -405,6 +318,46 @@ export default class EventsScreen extends React.Component {
     );
   }
 
+  unionQueryResults(prev, fetchMoreResult) {
+    const groups = [];
+
+    prev.currentPerson.personInGroupsByPersonId.nodes.forEach((item, index) => {
+      const combination = unionEvents(
+        prev.currentPerson.personInGroupsByPersonId.nodes[index]
+          .groupOfPersonByGroupId.eventMembersByParticipant.nodes,
+        fetchMoreResult.currentPerson.personInGroupsByPersonId.nodes[index]
+          .groupOfPersonByGroupId.eventMembersByParticipant.nodes
+      );
+
+      groups[index] = {
+        groupOfPersonByGroupId: {
+          eventMembersByParticipant: {
+            nodes: combination,
+            __typename: "EventMembersConnection"
+          },
+          __typename: "GroupOfPerson",
+          nodeId: item.groupOfPersonByGroupId.nodeId,
+          abbrName: item.groupOfPersonByGroupId.abbrName
+        },
+        __typename: "PersonInGroup",
+        nodeId: item.nodeId,
+        groupId: item.groupId
+      };
+    });
+
+    const result = {
+      currentPerson: {
+        personInGroupsByPersonId: {
+          nodes: groups,
+          __typename: "PersonInGroupsConnection"
+        },
+        __typename: "Person",
+        nodeId: prev.currentPerson.nodeId
+      }
+    };
+    return result;
+  }
+
   renderEmptyDate() {
     return (
       <View style={styles.emptyDate}>
@@ -414,8 +367,7 @@ export default class EventsScreen extends React.Component {
   }
 
   rowHasChanged(r1, r2) {
-    //nodeId????
-    return r1.id !== r2.id; //???????? Пока тут опасно
+    return r1.id !== r2.id;
   }
 
   renderItem(item) {
