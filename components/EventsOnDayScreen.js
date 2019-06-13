@@ -5,6 +5,7 @@ import { Query } from "react-apollo";
 import { GET_SELECTED_GROUPID } from "../queries/getSelectedGroupId";
 import { GET_EVENTS_ON_DAY } from "../queries/getEventsOnDay";
 import gql from "graphql-tag";
+import LoadingIndicator from "./LoadingIndicator";
 
 //Мб эффективнее создавать Date?
 //проверить!
@@ -83,7 +84,7 @@ export default class EventsOnDay extends React.Component {
             >
               {({ data, loading, error }) => {
                 if (error) return <Text>Error</Text>;
-                if (loading) return <Text>Loading</Text>;
+                if (loading) return <LoadingIndicator />;
 
                 const listOfDayEvents = normalizeData(
                   data.currentPerson.personInGroupsByPersonId.nodes

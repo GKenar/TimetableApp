@@ -6,6 +6,7 @@ import { Query } from "react-apollo";
 import { GET_EVENT_DATES } from "../queries/getEventDates";
 import { GET_SELECTED_GROUPID } from "../queries/getSelectedGroupId";
 import gql from "graphql-tag";
+import LoadingIndicator from "./LoadingIndicator";
 
 function normalizeData(data) {
   const dates = {};
@@ -56,7 +57,7 @@ export default class EventDatesScreen extends React.Component {
           loading: groupIdLoading,
           error: groupIdError
         }) => {
-          if (groupIdError) return null;
+          if (groupIdError) return null; //?
           if (groupIdLoading) return null;
 
           return (
@@ -72,7 +73,7 @@ export default class EventDatesScreen extends React.Component {
             >
               {({ data, loading, error }) => {
                 if (error) return <Text>Error</Text>;
-                if (loading) return <Text>Loading</Text>;
+                if (loading) return <LoadingIndicator />;
 
                 const markedDates = normalizeData(
                   data.currentPerson.personInGroupsByPersonId
@@ -103,13 +104,6 @@ export default class EventDatesScreen extends React.Component {
                       style={styles.calendar}
                       hideExtraDays
                       markedDates={markedDates}
-                      // markedDates={{
-                      //   [this.state.selected]: {
-                      //     selected: true,
-                      //     disableTouchEvent: true,
-                      //     selectedDotColor: "orange"
-                      //   }
-                      // }}
                     />
                   </View>
                 );

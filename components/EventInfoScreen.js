@@ -4,15 +4,15 @@ import { Text, Divider } from "react-native-elements";
 import { Query } from "react-apollo";
 import { GET_EVENT_DETAILS } from "../queries/getEventDetails";
 import gql from "graphql-tag";
+import LoadingIndicator from "./LoadingIndicator";
 
 const EventDescription = ({ eventId, timetableId }) => (
   <Query query={gql(GET_EVENT_DETAILS)} variables={{ eventId, timetableId }}>
     {({ data, loading, error }) => {
       if (error) return <Text>Error</Text>;
-      if (loading) return <Text>Loading</Text>;
-
+      if (loading) return <LoadingIndicator />;
+      
       const event = data.eventById;
-
       return (
         <View>
           <Text h3 style={{ textAlign: "center" }}>
@@ -61,9 +61,7 @@ export default class EventInfoScreen extends React.Component {
     if (event === null) return null; //Ошибка
 
     return (
-      <View>
-        <EventDescription eventId={event.eventId} timetableId={event.timeId} />
-      </View>
+      <EventDescription eventId={event.eventId} timetableId={event.timeId} />
     );
   }
 }
