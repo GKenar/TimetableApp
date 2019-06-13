@@ -18,7 +18,7 @@ export default class MainScreen extends React.Component {
         <Button
           onPress={() => navigation.navigate("Options")}
           color="#fff"
-          icon={<Icon name="cog" size={30} color="white" />}
+          icon={<Icon name="cog" size={32} color="white" />}
         />
       )
     };
