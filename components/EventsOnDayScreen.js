@@ -1,11 +1,12 @@
 import React from "react";
 import { View, FlatList, TouchableHighlight } from "react-native";
-import { Text, Divider, Badge } from "react-native-elements";
+import { Text, Divider, Badge, Button } from "react-native-elements";
 import { Query } from "react-apollo";
 import { GET_SELECTED_GROUPID } from "../queries/getSelectedGroupId";
 import { GET_EVENTS_ON_DAY } from "../queries/getEventsOnDay";
 import gql from "graphql-tag";
 import LoadingIndicator from "./LoadingIndicator";
+import ErrorMessage from "./ErrorMessage";
 
 //Мб эффективнее создавать Date?
 //проверить!
@@ -82,8 +83,16 @@ export default class EventsOnDay extends React.Component {
                 endTime: dateInterval.end
               }}
             >
-              {({ data, loading, error }) => {
-                if (error) return <Text>Error</Text>;
+              {({ data, loading, error, refetch }) => {
+                if (error)
+                  return (
+                    <ErrorMessage
+                      errorObject={error}
+                      message="Ошибка при выполнении запроса на сервер"
+                    >
+                      <Button title="Обновить" onPress={() => refetch()} />
+                    </ErrorMessage>
+                  );
                 if (loading) return <LoadingIndicator />;
 
                 const listOfDayEvents = normalizeData(

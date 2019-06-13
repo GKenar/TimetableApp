@@ -1,12 +1,13 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Text } from "react-native-elements";
+import { Button } from "react-native-elements";
 import { Calendar } from "react-native-calendars";
 import { Query } from "react-apollo";
 import { GET_EVENT_DATES } from "../queries/getEventDates";
 import { GET_SELECTED_GROUPID } from "../queries/getSelectedGroupId";
 import gql from "graphql-tag";
 import LoadingIndicator from "./LoadingIndicator";
+import ErrorMessage from "./ErrorMessage";
 
 function normalizeData(data) {
   const dates = {};
@@ -71,8 +72,16 @@ export default class EventDatesScreen extends React.Component {
                     : undefined
               }}
             >
-              {({ data, loading, error }) => {
-                if (error) return <Text>Error</Text>;
+              {({ data, loading, error, refetch }) => {
+                if (error)
+                  return (
+                    <ErrorMessage
+                      errorObject={error}
+                      message="Ошибка при выполнении запроса на сервер"
+                    >
+                      <Button title="Обновить" onPress={() => refetch()} />
+                    </ErrorMessage>
+                  );
                 if (loading) return <LoadingIndicator />;
 
                 const markedDates = normalizeData(

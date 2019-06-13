@@ -8,6 +8,7 @@ import calendarLocalization from "./calendarLocalization"; //???
 import { GET_EVENTS } from "../queries/getEvents";
 import { daysInMonth, dateToYMD, addDays } from "./dateFunctions";
 import LoadingIndicator from "./LoadingIndicator";
+import ErrorMessage from "./ErrorMessage";
 import gql from "graphql-tag";
 
 //Приводит данные с сервера в пригодный для agenda вид
@@ -189,26 +190,28 @@ export default class EventsScreen extends React.Component {
         notifyOnNetworkStatusChange
       >
         {({ data, error, refetch, fetchMore, networkStatus }) => {
-          if (error) {
-            console.log(error);
+          if (error)
             return (
-              <View>
-                <Text>Error</Text>
+              <ErrorMessage
+                errorObject={error}
+                message="Ошибка при выполнении запроса на сервер"
+              >
                 <Button
-                  title="Refresh"
+                  title="Обновить"
                   onPress={() =>
-                    refetch({ minDate: this.minDate, maxDate: this.maxDate })
+                    refetch({
+                      minDate: this.minDate,
+                      maxDate: this.maxDate,
+                      groupId:
+                        this.props.groupId !== -1
+                          ? this.props.groupId
+                          : undefined
+                    })
                   }
                 />
-              </View>
+              </ErrorMessage>
             );
-          }
           if (networkStatus === 1) return <LoadingIndicator />;
-
-          if (data.currentPerson === undefined) {
-            console.log("status:");
-            console.log(networkStatus);
-          }
 
           const events = normalizeData(
             data.currentPerson.personInGroupsByPersonId,

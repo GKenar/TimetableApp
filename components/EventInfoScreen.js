@@ -1,17 +1,26 @@
 import React from "react";
 import { View } from "react-native";
-import { Text, Divider } from "react-native-elements";
+import { Text, Divider, Button } from "react-native-elements";
 import { Query } from "react-apollo";
 import { GET_EVENT_DETAILS } from "../queries/getEventDetails";
 import gql from "graphql-tag";
 import LoadingIndicator from "./LoadingIndicator";
+import ErrorMessage from "./ErrorMessage";
 
 const EventDescription = ({ eventId, timetableId }) => (
   <Query query={gql(GET_EVENT_DETAILS)} variables={{ eventId, timetableId }}>
-    {({ data, loading, error }) => {
-      if (error) return <Text>Error</Text>;
+    {({ data, loading, error, refetch }) => {
+      if (error)
+        return (
+          <ErrorMessage
+            errorObject={error}
+            message="Ошибка при выполнении запроса на сервер"
+          >
+            <Button title="Обновить" onPress={() => refetch()} />
+          </ErrorMessage>
+        );
       if (loading) return <LoadingIndicator />;
-      
+
       const event = data.eventById;
       return (
         <View>
