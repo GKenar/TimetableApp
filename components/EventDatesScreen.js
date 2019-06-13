@@ -23,8 +23,16 @@ function normalizeData(data) {
         const date = time.startTime.split("T")[0];
 
         if (!dates[date])
-          dates[date] = { selected: true, marked: true, single: true };
-        else dates[date].single = false;
+          dates[date] = {
+            selected: true,
+            marked: true,
+            single: true,
+            timeId: time.id
+          };
+        else {
+          dates[date].single = false;
+          dates[date].timeId = null;
+        }
       }
     );
   });
@@ -80,7 +88,7 @@ export default class EventDatesScreen extends React.Component {
                           this.props.navigation.push("EventInfoScreen", {
                             event: {
                               eventId: event.eventId,
-                              timeId: event.timeId
+                              timeId: markedDates[day.dateString].timeId
                             }
                           });
                         } else {

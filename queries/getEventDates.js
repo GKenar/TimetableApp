@@ -20,6 +20,7 @@ export const GET_EVENT_DATES = `
                   timetablesByEventId {
                     nodes {
                       nodeId
+                      id
                       startTime
                       endTime
                     }
