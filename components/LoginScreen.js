@@ -49,7 +49,7 @@ class AuthForm extends React.Component {
     super(props);
 
     this.state = {
-      userLogin: "pustovalov", //Не имя, а логин
+      userLogin: "",
       userPassword: "",
       handling: false,
       invalidUser: false
@@ -105,7 +105,7 @@ class AuthForm extends React.Component {
               onChangeText={text => this.setState({ userPassword: text })}
             />
             <Button
-              title="Sign in with vk"
+              title="Войти"
               titleStyle={{ fontWeight: "700", fontSize: 24 }}
               buttonStyle={{
                 backgroundColor: "rgba(92, 99,216, 1)",
@@ -153,7 +153,7 @@ export default class LoginScreen extends React.Component {
           <AuthForm {...this.props} />
         </View>
         <View style={styles.oauthForm}>
-          <Text h4>or sign in with:</Text>
+          {/* <Text h4>or sign in with:</Text>
           <View flexDirection="row">
             <SocialIcon
               type="facebook"
@@ -161,7 +161,7 @@ export default class LoginScreen extends React.Component {
             />
             <SocialIcon type="twitter" />
             <SocialIcon type="steam" />
-          </View>
+          </View> */}
         </View>
       </View>
     );
