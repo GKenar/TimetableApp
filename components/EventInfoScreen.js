@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { Text, Divider, Button } from "react-native-elements";
 import { Query } from "react-apollo";
 import { GET_EVENT_DETAILS } from "../queries/getEventDetails";
@@ -23,36 +23,40 @@ const EventDescription = ({ eventId, timetableId }) => (
 
       const event = data.eventById;
       return (
-        <View>
+        <ScrollView>
           <Text h3 style={{ textAlign: "center" }}>
             {event.name}
           </Text>
           <Divider style={{ margin: 6 }} />
-          <Text h4 style={{ margin: 5 }}>
+          <Text style={styles.fieldName}>Дата:</Text>
+          <Text style={styles.fieldValue}>
+            {event.timetablesByEventId.nodes[0].startTime.split("T")[0]}
+          </Text>
+          <Text style={styles.fieldName}>
             Начало в:
           </Text>
-          <Text h4 style={{ margin: 5 }}>
-            {event.timetablesByEventId.nodes[0].startTime}
+          <Text style={styles.fieldValue}>
+            {event.timetablesByEventId.nodes[0].startTime.split("T")[1]}
           </Text>
-          <Text h4 style={{ margin: 5 }}>
+          <Text style={styles.fieldName}>
             Конец в:
           </Text>
-          <Text h4 style={{ margin: 5 }}>
-            {event.timetablesByEventId.nodes[0].endTime}
+          <Text style={styles.fieldValue}>
+            {event.timetablesByEventId.nodes[0].endTime.split("T")[1]}
           </Text>
-          <Text h4 style={{ margin: 5 }}>
+          <Text style={styles.fieldName}>
             Описание:
           </Text>
-          <Text h4 style={{ margin: 5 }}>
-            {"Здесь может быть ваше описание"}
+          <Text style={styles.fieldValue}>
+            {"Здесь описание события"}
           </Text>
-          <Text h4 style={{ margin: 5 }}>
+          <Text style={styles.fieldName}>
             Место:
           </Text>
-          <Text h4 style={{ margin: 5 }}>
+          <Text style={styles.fieldValue}>
             {event.timetablesByEventId.nodes[0].placeByPlaceId}
           </Text>
-        </View>
+        </ScrollView>
       );
     }}
   </Query>
@@ -74,3 +78,15 @@ export default class EventInfoScreen extends React.Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  fieldName: {
+    margin: 5,
+    fontWeight: "bold",
+    fontSize: 22
+  },
+  fieldValue: {
+    margin: 5,
+    fontSize: 20
+  }
+});
