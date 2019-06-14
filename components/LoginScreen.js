@@ -152,8 +152,9 @@ export default class LoginScreen extends React.Component {
           </Text>
           <AuthForm {...this.props} />
         </View>
+        {/*
         <View style={styles.oauthForm}>
-          {/* <Text h4>or sign in with:</Text>
+           <Text h4>or sign in with:</Text>
           <View flexDirection="row">
             <SocialIcon
               type="facebook"
@@ -161,8 +162,9 @@ export default class LoginScreen extends React.Component {
             />
             <SocialIcon type="twitter" />
             <SocialIcon type="steam" />
-          </View> */}
+          </View> 
         </View>
+        */}
       </View>
     );
   }
@@ -173,12 +175,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f0f0f0",
     alignItems: "stretch",
-    justifyContent: "space-between"
+    justifyContent: "center"
   },
   loginContainer: {
-    flex: 0.5,
+    flex: 1,
     alignItems: "stretch",
-    justifyContent: "space-around"
+    justifyContent: "space-between",
+    marginTop: 10
   },
   oauthForm: {
     flex: 0.2,
