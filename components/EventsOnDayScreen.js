@@ -44,7 +44,10 @@ function normalizeData(nodes) {
     );
   });
 
-  //Здесь нет сортировки по времени??
+  //Сортировка по времени
+  data.sort((a, b) =>
+    a.startTime > b.startTime ? 1 : a.startTime < b.startTime ? -1 : 0
+  );
 
   return data;
 }
