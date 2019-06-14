@@ -51,7 +51,12 @@ const normalizeData = (requestedData, startDate, endDate) => {
     );
   });
 
-  //Нужна сортировка по времени!
+  //Сортировка по startTime
+  Object.keys(data).forEach(date => {
+    data[date].sort((a, b) =>
+      a.startTime > b.startTime ? 1 : a.startTime < b.startTime ? -1 : 0
+    );
+  });
 
   return data;
 };
