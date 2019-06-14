@@ -44,6 +44,8 @@ function normalizeData(nodes) {
     );
   });
 
+  //Здесь нет сортировки по времени??
+
   return data;
 }
 
@@ -99,52 +101,63 @@ export default class EventsOnDay extends React.Component {
                   data.currentPerson.personInGroupsByPersonId.nodes
                 );
 
+                const eventName = listOfDayEvents[0]
+                  ? listOfDayEvents[0].eventName
+                  : "undefined";
+
                 return (
-                  <FlatList
-                    data={listOfDayEvents}
-                    renderItem={({ item }) => (
-                      <TouchableHighlight
-                        style={{ marginBottom: 10 }}
-                        onPress={() =>
-                          this.props.navigation.push("EventInfoScreen", {
-                            event: {
-                              eventId: item.eventId,
-                              timeId: item.timeId
-                            }
-                          })
-                        }
-                        underlayColor="#FAFAFA"
-                        activeOpacity={0.9}
-                      >
-                        <View>
-                          <View
-                            style={{
-                              flex: 1,
-                              flexDirection: "row",
-                              justifyContent: "space-between",
-                              alignItems: "center"
-                            }}
-                          >
-                            <Text h4>
-                              {item.startTime.split("T")[1]}-
-                              {item.endTime.split("T")[1]}
-                            </Text>
-                            <Badge
-                              style={{ margin: 20 }}
-                              value={
-                                <Text h4 style={{ color: "white", margin: 10 }}>
-                                  {item.groupAbbr}
-                                </Text>
+                  <View>
+                    <Text h3 style={{ marginBottom: 20, textAlign: "center" }}>
+                      {eventName}
+                    </Text>
+                    <FlatList
+                      data={listOfDayEvents}
+                      renderItem={({ item }) => (
+                        <TouchableHighlight
+                          style={{ marginBottom: 10 }}
+                          onPress={() =>
+                            this.props.navigation.push("EventInfoScreen", {
+                              event: {
+                                eventId: item.eventId,
+                                timeId: item.timeId
                               }
-                            />
+                            })
+                          }
+                          underlayColor="#FAFAFA"
+                          activeOpacity={0.9}
+                        >
+                          <View>
+                            <View
+                              style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center"
+                              }}
+                            >
+                              <Text h4>
+                                {item.startTime.split("T")[1]}-
+                                {item.endTime.split("T")[1]}
+                              </Text>
+                              <Badge
+                                style={{ margin: 20 }}
+                                value={
+                                  <Text
+                                    h4
+                                    style={{ color: "white", margin: 10 }}
+                                  >
+                                    {item.groupAbbr}
+                                  </Text>
+                                }
+                              />
+                            </View>
+                            <Divider />
                           </View>
-                          <Text h4>{item.eventName}</Text>
-                          <Divider />
-                        </View>
-                      </TouchableHighlight>
-                    )}
-                    keyExtractor={item => item.id.toString()}
-                  />
+                        </TouchableHighlight>
+                      )}
+                      keyExtractor={item => item.id.toString()}
+                    />
+                  </View>
                 );
               }}
             </Query>
