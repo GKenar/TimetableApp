@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import { Button } from "react-native-elements";
 import { Calendar } from "react-native-calendars";
 import { Query } from "react-apollo";
@@ -89,7 +89,7 @@ export default class EventDatesScreen extends React.Component {
                 );
 
                 return (
-                  <View>
+                  <ScrollView>
                     <Calendar
                       onDayPress={day => {
                         if (!markedDates[day.dateString]) return;
@@ -114,7 +114,7 @@ export default class EventDatesScreen extends React.Component {
                       hideExtraDays
                       markedDates={markedDates}
                     />
-                  </View>
+                  </ScrollView>
                 );
               }}
             </Query>
