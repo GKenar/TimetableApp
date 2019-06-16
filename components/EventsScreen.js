@@ -231,13 +231,40 @@ export default class EventsScreen extends React.Component {
           return (
             <Agenda
               items={events}
-              onDayPress={date => {
-                //console.log(date);
-                //this.currentDate = new Date(date.dateString); //Всегда верно?
-              }}
-              onDayChange={day => {
-                //Тут можно подгружать данные на следующий месяц, когда близко подходим к нему
-                //console.log("day changed " + day);
+              //Может быть проблема при просмотре следующих месяцев
+              onDayChange={date => {
+                //Сделал пока так, возможно, можно переделать
+                //
+                const nextYear = date.year + (date.month === 12 ? 1 : 0);
+                const nextMonth = date.month % 12;
+                const firstDayOfNextMonth = new Date(
+                  nextYear,
+                  nextMonth,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                );
+                //Упростить?
+                const lastDayOfNextMonth = addDays(
+                  new Date(
+                    nextYear,
+                    nextMonth,
+                    daysInMonth(date.month - 1, date.year),
+                    0,
+                    0,
+                    0,
+                    0
+                  ),
+                  1
+                );
+                this.checkAndFetchMore(
+                  fetchMore,
+                  firstDayOfNextMonth,
+                  lastDayOfNextMonth
+                );
+                //
               }}
               loadItemsForMonth={date => {
                 //Поменять названия?
@@ -264,56 +291,18 @@ export default class EventsScreen extends React.Component {
                   1
                 );
 
-                //Когда дергаешь быстро календарь, то не загружаются события
-                let fetchDateIntervalStart;
-                let fetchDateIntervalEnd;
-                let needFetchMore = false;
-                //Начальный интервал minDate и maxDate должны быть равны месяцу
-                if (firstDayOfMonth < this.minDate) {
-                  fetchDateIntervalStart = firstDayOfMonth;
-                  fetchDateIntervalEnd = this.minDate;
-
-                  needFetchMore = true;
-                }
-                if (lastDayOfMonth > this.maxDate) {
-                  fetchDateIntervalStart = this.maxDate;
-                  fetchDateIntervalEnd = lastDayOfMonth;
-
-                  needFetchMore = true;
-                }
-
-                console.log(needFetchMore);
-
-                if (!needFetchMore) return;
-
-                fetchMore({
-                  variables: {
-                    minDate: fetchDateIntervalStart,
-                    maxDate: fetchDateIntervalEnd,
-                    groupId:
-                      this.props.groupId !== -1 ? this.props.groupId : undefined
-                  },
-                  updateQuery: (prev, { fetchMoreResult, variables }) => {
-                    if (variables.minDate < this.minDate) {
-                      this.minDate = variables.minDate;
-                    }
-
-                    if (variables.maxDate > this.maxDate) {
-                      this.maxDate = variables.maxDate;
-                    }
-
-                    if (!fetchMoreResult) return prev;
-
-                    return this.unionQueryResults(prev, fetchMoreResult);
-                  }
-                });
+                this.checkAndFetchMore(
+                  fetchMore,
+                  firstDayOfMonth,
+                  lastDayOfMonth
+                );
               }}
-              //selected={new Date("2019-03-01")}
+              //selected={new Date("2019-02-20")}
               renderItem={this.renderItem.bind(this)}
               renderEmptyDate={this.renderEmptyDate}
               rowHasChanged={this.rowHasChanged}
               pastScrollRange={10}
-              futureScrollRange={10}
+              futureScrollRange={10} //Может не ограничивать?
               onRefresh={() => {
                 refetch({ minDate: this.minDate, maxDate: this.maxDate });
               }}
@@ -325,6 +314,51 @@ export default class EventsScreen extends React.Component {
       </Query>
     );
   }
+
+  checkAndFetchMore = (fetchMore, firstDayOfInterval, lastDayOfInterval) => {
+    let fetchDateIntervalStart;
+    let fetchDateIntervalEnd;
+    let needFetchMore = false;
+    //Начальный интервал minDate и maxDate должны быть равны месяцу
+    if (firstDayOfInterval < this.minDate) {
+      fetchDateIntervalStart = firstDayOfInterval;
+      fetchDateIntervalEnd = this.minDate;
+
+      needFetchMore = true;
+    }
+    if (lastDayOfInterval > this.maxDate) {
+      //Если первое условие не сработало
+      if (!needFetchMore) fetchDateIntervalStart = this.maxDate;
+      fetchDateIntervalEnd = lastDayOfInterval;
+
+      needFetchMore = true;
+    }
+
+    console.log(needFetchMore);
+
+    if (!needFetchMore) return;
+
+    fetchMore({
+      variables: {
+        minDate: fetchDateIntervalStart,
+        maxDate: fetchDateIntervalEnd,
+        groupId: this.props.groupId !== -1 ? this.props.groupId : undefined
+      },
+      updateQuery: (prev, { fetchMoreResult, variables }) => {
+        if (variables.minDate < this.minDate) {
+          this.minDate = variables.minDate;
+        }
+
+        if (variables.maxDate > this.maxDate) {
+          this.maxDate = variables.maxDate;
+        }
+
+        if (!fetchMoreResult) return prev;
+
+        return this.unionQueryResults(prev, fetchMoreResult);
+      }
+    });
+  };
 
   unionQueryResults(prev, fetchMoreResult) {
     const groups = [];
