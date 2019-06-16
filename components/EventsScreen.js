@@ -237,7 +237,7 @@ export default class EventsScreen extends React.Component {
                 //
                 const nextYear = date.year + (date.month === 12 ? 1 : 0);
                 const nextMonth = date.month % 12;
-                const firstDayOfNextMonth = new Date(
+                const firstDateOfNextMonth = new Date(
                   nextYear,
                   nextMonth,
                   1,
@@ -247,7 +247,7 @@ export default class EventsScreen extends React.Component {
                   0
                 );
                 //Упростить?
-                const lastDayOfNextMonth = addDays(
+                const lastDateOfNextMonth = addDays(
                   new Date(
                     nextYear,
                     nextMonth,
@@ -261,14 +261,14 @@ export default class EventsScreen extends React.Component {
                 );
                 this.checkAndFetchMore(
                   fetchMore,
-                  firstDayOfNextMonth,
-                  lastDayOfNextMonth
+                  firstDateOfNextMonth,
+                  lastDateOfNextMonth
                 );
                 //
               }}
               loadItemsForMonth={date => {
                 //Поменять названия?
-                const firstDayOfMonth = new Date(
+                const firstDateOfInterval = new Date(
                   date.year,
                   date.month - 1,
                   1,
@@ -278,11 +278,14 @@ export default class EventsScreen extends React.Component {
                   0
                 );
                 //Упростить?
-                const lastDayOfMonth = addDays(
+                const lastDateOfInterval = addDays(
                   new Date(
-                    date.year,
-                    date.month - 1,
-                    daysInMonth(date.month - 1, date.year),
+                    date.year + (date.month === 12 ? 1 : 0),
+                    date.month % 12,
+                    daysInMonth(
+                      date.month % 12,
+                      date.year + (date.month === 12 ? 1 : 0)
+                    ),
                     0,
                     0,
                     0,
@@ -293,8 +296,8 @@ export default class EventsScreen extends React.Component {
 
                 this.checkAndFetchMore(
                   fetchMore,
-                  firstDayOfMonth,
-                  lastDayOfMonth
+                  firstDateOfInterval,
+                  lastDateOfInterval
                 );
               }}
               //selected={new Date("2019-02-20")}
@@ -315,21 +318,21 @@ export default class EventsScreen extends React.Component {
     );
   }
 
-  checkAndFetchMore = (fetchMore, firstDayOfInterval, lastDayOfInterval) => {
+  checkAndFetchMore = (fetchMore, firstDateOfInterval, lastDateOfInterval) => {
     let fetchDateIntervalStart;
     let fetchDateIntervalEnd;
     let needFetchMore = false;
     //Начальный интервал minDate и maxDate должны быть равны месяцу
-    if (firstDayOfInterval < this.minDate) {
-      fetchDateIntervalStart = firstDayOfInterval;
+    if (firstDateOfInterval < this.minDate) {
+      fetchDateIntervalStart = firstDateOfInterval;
       fetchDateIntervalEnd = this.minDate;
 
       needFetchMore = true;
     }
-    if (lastDayOfInterval > this.maxDate) {
+    if (lastDateOfInterval > this.maxDate) {
       //Если первое условие не сработало
       if (!needFetchMore) fetchDateIntervalStart = this.maxDate;
-      fetchDateIntervalEnd = lastDayOfInterval;
+      fetchDateIntervalEnd = lastDateOfInterval;
 
       needFetchMore = true;
     }
