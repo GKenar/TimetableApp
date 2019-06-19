@@ -34,7 +34,10 @@ export default class OptionsScreen extends React.Component {
                 buttonStyle={{ backgroundColor: "red" }}
                 onPress={() =>
                   logOut()
-                    .then(() => client.clearStore()) //Если выйти во время выполенния какого-то запроса, то будет ошибка
+                    .then(() => {
+                      client.stop(); //Чтобы не было ошибок, если выйти при выполнении запросов
+                      return client.clearStore();
+                    })
                     .then(() => this.props.navigation.navigate("Auth"))
                 }
               />
