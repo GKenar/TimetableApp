@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { Text, Button, Divider } from "react-native-elements";
 import GroupSelectForm from "./GroupSelectForm";
 import { logOut } from "./managmentFunctions";
+import { ApolloConsumer } from "react-apollo";
 
 export default class OptionsScreen extends React.Component {
   static navigationOptions = {
@@ -21,20 +22,26 @@ export default class OptionsScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text h4>Фильтр по группам: </Text>
-        <GroupSelectForm />
-        <Divider style={{ height: 2, margin: 10 }} />
-        <View style={{ flex: 1, justifyContent: "flex-end" }}>
-          <Button
-            title="Log out"
-            buttonStyle={{ backgroundColor: "red" }}
-            onPress={() =>
-              logOut().then(() => this.props.navigation.navigate("Auth"))
-            }
-          />
-        </View>
-      </View>
+      <ApolloConsumer>
+        {client => (
+          <View style={styles.container}>
+            <Text h4>Фильтр по группам: </Text>
+            <GroupSelectForm />
+            <Divider style={{ height: 2, margin: 10 }} />
+            <View style={{ flex: 1, justifyContent: "flex-end" }}>
+              <Button
+                title="Log out"
+                buttonStyle={{ backgroundColor: "red" }}
+                onPress={() =>
+                  logOut()
+                    .then(() => client.clearStore()) //Если выйти во время выполенния какого-то запроса, то будет ошибка
+                    .then(() => this.props.navigation.navigate("Auth"))
+                }
+              />
+            </View>
+          </View>
+        )}
+      </ApolloConsumer>
     );
   }
 }
