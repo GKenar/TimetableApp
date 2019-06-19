@@ -49,8 +49,8 @@ class AuthForm extends React.Component {
     super(props);
 
     this.state = {
-      userLogin: "",
-      userPassword: "",
+      userLogin: "pustovalov",
+      userPassword: "BQzJ9",
       handling: false,
       invalidUser: false
     };

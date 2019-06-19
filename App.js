@@ -7,7 +7,7 @@ import {
 } from "react-navigation";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "react-apollo";
-import { AsyncStorage } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { persistCache } from "apollo-cache-persist";
 import MainScreen from "./components/MainScreen";
@@ -22,16 +22,16 @@ const cache = new InMemoryCache(); //???
 
 // await before instantiating ApolloClient, else queries might run before the cache is persisted
 //Тут раскоментить, чтобы использовать persist cache
-persistCache({
-  ///????????????? await?
-  cache,
-  storage: AsyncStorage
-});
+// persistCache({
+//   ///????????????? await?
+//   cache,
+//   storage: AsyncStorage
+// });
 
 // Continue setting up Apollo as usual.
 
 const client = new ApolloClient({
-  //cache,
+  cache,
   uri: "http://ksa.spsu.ru/graphql",
   // headers: {
   //   Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZGJfYWRtaW4iLCJwZXJzb25faWQiOjE1Mzg3MDA5LCJpYXQiOjE1NTg5NzU0NTAsImV4cCI6MTU1OTA2MTg1MCwiYXVkIjoicG9zdGdyYXBoaWxlIiwiaXNzIjoicG9zdGdyYXBoaWxlIn0.Zl45IBAOCTHanrBLpPojOWaOxjqXRd3ChTNHd5MGVVs"
@@ -69,6 +69,18 @@ const client = new ApolloClient({
       }
     }
   }
+});
+
+//Чтобы после очистки были записаны defaults
+client.onClearStore(() => {
+  cache.writeData({
+    data: {
+      selectedGroup: {
+        __typename: "selectedGroup",
+        groupId: -1
+      }
+    }
+  });
 });
 
 const AppNavigator = createStackNavigator(
