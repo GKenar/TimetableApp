@@ -440,7 +440,7 @@ export default class EventsScreen extends React.Component {
                 item.startTime
               } - ${item.endTime}`}</Text>
               <Badge
-                style={{ margin: 20 }}
+                badgeStyle={{ paddingVertical: 8 }}
                 value={
                   <Text
                     style={{

@@ -143,7 +143,7 @@ export default class EventsOnDay extends React.Component {
                                 {item.endTime.split("T")[1]}
                               </Text>
                               <Badge
-                                style={{ margin: 20 }}
+                                badgeStyle={{ paddingVertical: 8 }}
                                 value={
                                   <Text
                                     h4
