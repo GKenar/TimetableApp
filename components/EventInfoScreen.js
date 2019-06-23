@@ -28,31 +28,14 @@ const EventDescription = ({ eventId, timetableId }) => (
             {event.name}
           </Text>
           <Divider style={{ margin: 6 }} />
-          <Text style={styles.fieldName}>Дата:</Text>
-          <Text style={styles.fieldValue}>
-            {event.timetablesByEventId.nodes[0].startTime.split("T")[0]}
-          </Text>
           <Text style={styles.fieldName}>
-            Начало в:
+            Дата:  {event.timetablesByEventId.nodes[0].startTime.split("T")[0]}
           </Text>
-          <Text style={styles.fieldValue}>
-            {event.timetablesByEventId.nodes[0].startTime.split("T")[1]}
-          </Text>
-          <Text style={styles.fieldName}>
-            Конец в:
-          </Text>
-          <Text style={styles.fieldValue}>
-            {event.timetablesByEventId.nodes[0].endTime.split("T")[1]}
-          </Text>
-          <Text style={styles.fieldName}>
-            Описание:
-          </Text>
-          <Text style={styles.fieldValue}>
-            {"Здесь описание события"}
-          </Text>
-          <Text style={styles.fieldName}>
-            Место:
-          </Text>
+          <Text style={styles.fieldName}>Начало в:  {event.timetablesByEventId.nodes[0].startTime.split("T")[1]}</Text>
+          <Text style={styles.fieldName}>Конец в:  {event.timetablesByEventId.nodes[0].endTime.split("T")[1]}</Text>
+          <Text style={styles.fieldName}>Описание:</Text>
+          <Text style={styles.fieldValue}>{"Здесь описание события"}</Text>
+          <Text style={styles.fieldName}>Место:</Text>
           <Text style={styles.fieldValue}>
             {event.timetablesByEventId.nodes[0].placeByPlaceId}
           </Text>
