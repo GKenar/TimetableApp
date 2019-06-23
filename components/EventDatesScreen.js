@@ -8,6 +8,7 @@ import { GET_SELECTED_GROUPID } from "../queries/getSelectedGroupId";
 import gql from "graphql-tag";
 import LoadingIndicator from "./LoadingIndicator";
 import ErrorMessage from "./ErrorMessage";
+import { dateToYMD } from "./dateFunctions";
 
 function normalizeData(data) {
   const dates = {};
@@ -22,7 +23,7 @@ function normalizeData(data) {
     group.groupOfPersonByGroupId.eventMembersByParticipant.nodes[0].eventByEventId.timetablesByEventId.nodes.forEach(
       time => {
         //console.log(time.startTime);
-        const date = time.startTime.split("T")[0];
+        const date = dateToYMD(new Date(time.startTime + "Z"));
 
         if (!dates[date])
           dates[date] = {
