@@ -234,7 +234,8 @@ export default class EventsScreen extends React.Component {
               //Может быть проблема при просмотре следующих месяцев
               onDayChange={date => {
                 //Сделал пока так, возможно, можно переделать
-                //
+
+                //Здесь мы получаем даты следующего месяца и делаем запрос на него
                 const nextYear = date.year + (date.month === 12 ? 1 : 0);
                 const nextMonth = date.month % 12;
                 const firstDateOfNextMonth = new Date(
@@ -267,7 +268,8 @@ export default class EventsScreen extends React.Component {
                 //
               }}
               loadItemsForMonth={date => {
-                //Поменять названия?
+                //Здесь мы получаем интервал дат: от начала месяца (который передаётся в аргументе) 
+                //до 1 числа месяца через месяц после месяца в аргументе :/ Т.е январь 01 - март 01
                 const firstDateOfInterval = new Date(
                   date.year,
                   date.month - 1,
