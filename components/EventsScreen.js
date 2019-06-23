@@ -6,7 +6,7 @@ import { Query } from "react-apollo";
 import lodash from "lodash";
 import calendarLocalization from "./calendarLocalization"; //???
 import { GET_EVENTS } from "../queries/getEvents";
-import { daysInMonth, dateToYMD, addDays } from "./dateFunctions";
+import { daysInMonth, dateToYMD, dateToHMS, addDays } from "./dateFunctions";
 import LoadingIndicator from "./LoadingIndicator";
 import ErrorMessage from "./ErrorMessage";
 import gql from "graphql-tag";
@@ -27,14 +27,21 @@ const normalizeData = (requestedData, startDate, endDate) => {
       event => {
         //console.log(event);
         event.eventByEventId.timetablesByEventId.nodes.forEach(time => {
-          const startDateTime = time.startTime.split("T");
-          const endDateTime = time.endTime.split("T");
+          const utcStartTime = new Date(time.startTime + "Z");
+          const utcEndTime = new Date(time.endTime + "Z");
 
-          if (!data[startDateTime[0]]) {
-            data[startDateTime[0]] = [];
+          //var options = { weekday: 'numeric', year: 'long', month: 'numeric', day: 'numeric' };
+          //console.log(dateToYMD(utcStartTime));
+          //console.log(utcStartTime.toLocaleDateString());
+
+          //const startDateTime = time.startTime.split("T");
+          //const endDateTime = time.endTime.split("T");
+
+          if (!data[dateToYMD(utcStartTime)]) {
+            data[dateToYMD(utcStartTime)] = [];
           }
 
-          data[startDateTime[0]].push({
+          data[dateToYMD(utcStartTime)].push({
             id:
               group.groupOfPersonByGroupId.nodeId +
               event.eventByEventId.id +
@@ -42,8 +49,8 @@ const normalizeData = (requestedData, startDate, endDate) => {
             eventId: event.eventByEventId.id,
             timeId: time.id,
             name: event.eventByEventId.name,
-            startTime: startDateTime[1],
-            endTime: endDateTime[1],
+            startTime: dateToHMS(utcStartTime),
+            endTime: dateToHMS(utcEndTime),
             groupAbbr: group.groupOfPersonByGroupId.abbrName
           });
         });
@@ -179,8 +186,18 @@ export default class EventsScreen extends React.Component {
     this.maxDate.setHours(0);
     this.maxDate.setMinutes(0);
     this.maxDate.setSeconds(0);
-    // this.minDate = new Date("2019-03-01");
-    // this.maxDate = new Date("2019-04-01");
+
+    //console.log("AAAAAAAAAAAA");
+    //console.log(this.minDate);
+    //console.log(this.minDate.toLocaleString());
+    //console.log(this.minDate.toString());
+    //console.log(this.minDate.toISOString());
+    //console.log(this.maxDate);
+    //console.log(this.maxDate.toLocaleString());
+    //console.log(this.maxDate.toString());
+    //console.log(this.maxDate.toISOString());
+    //this.minDate = new Date("2019-03-01");
+    //this.maxDate = new Date("2019-04-01");
   }
 
   render() {
@@ -188,7 +205,7 @@ export default class EventsScreen extends React.Component {
       <Query
         query={gql(GET_EVENTS)}
         variables={{
-          minDate: this.minDate,
+          minDate: this.minDate, //Возможно, везде в variables нужно добавить .toISOString()
           maxDate: this.maxDate,
           groupId: this.props.groupId !== -1 ? this.props.groupId : undefined
         }}
@@ -260,15 +277,15 @@ export default class EventsScreen extends React.Component {
                   ),
                   1
                 );
+
                 this.checkAndFetchMore(
                   fetchMore,
                   firstDateOfNextMonth,
                   lastDateOfNextMonth
                 );
-                //
               }}
               loadItemsForMonth={date => {
-                //Здесь мы получаем интервал дат: от начала месяца (который передаётся в аргументе) 
+                //Здесь мы получаем интервал дат: от начала месяца (который передаётся в аргументе)
                 //до 1 числа месяца через месяц после месяца в аргументе :/ Т.е январь 01 - март 01
                 const firstDateOfInterval = new Date(
                   date.year,
@@ -309,7 +326,12 @@ export default class EventsScreen extends React.Component {
               pastScrollRange={10}
               futureScrollRange={10} //Может не ограничивать?
               onRefresh={() => {
-                refetch({ minDate: this.minDate, maxDate: this.maxDate });
+                refetch({
+                  minDate: this.minDate,
+                  maxDate: this.maxDate,
+                  groupId:
+                    this.props.groupId !== -1 ? this.props.groupId : undefined
+                });
               }}
               refreshing={networkStatus === 4 || networkStatus === 3}
               //refreshControl={null}

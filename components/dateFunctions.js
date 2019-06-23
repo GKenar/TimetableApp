@@ -8,7 +8,41 @@ export function daysInMonth(month, year) {
 }
 
 export function dateToYMD(date) {
-  return date.toISOString().split("T")[0];
+  //return date.toISOString().split("T")[0];
+
+  function pad(number) {
+    if (number < 10) {
+      return "0" + number;
+    }
+    return number;
+  }
+
+  return (
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate())
+  );
+}
+
+export function dateToHMS(date) {
+  //return date.toISOString().split("T")[0];
+
+  function pad(number) {
+    if (number < 10) {
+      return "0" + number;
+    }
+    return number;
+  }
+
+  return (
+    pad(date.getHours()) +
+    ":" +
+    pad(date.getMinutes()) +
+    ":" +
+    pad(date.getSeconds())
+  );
 }
 
 export function addDays(date, days) {
