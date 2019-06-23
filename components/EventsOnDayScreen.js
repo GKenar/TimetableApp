@@ -7,15 +7,7 @@ import { GET_EVENTS_ON_DAY } from "../queries/getEventsOnDay";
 import gql from "graphql-tag";
 import LoadingIndicator from "./LoadingIndicator";
 import ErrorMessage from "./ErrorMessage";
-
-//Мб эффективнее создавать Date?
-//проверить!
-function dateStringToTimeInterval(dateStr) {
-  return {
-    start: new Date(`${dateStr}T00:00:00`),
-    end: new Date(`${dateStr}T23:59:59`)
-  };
-}
+import { dateToHMS } from "./dateFunctions";
 
 function normalizeData(nodes) {
   const data = [];
@@ -35,8 +27,8 @@ function normalizeData(nodes) {
             eventId: event.eventByEventId.id,
             timeId: timetable.id,
             eventName: event.eventByEventId.name,
-            startTime: timetable.startTime,
-            endTime: timetable.endTime,
+            startTime: dateToHMS(new Date(timetable.startTime + "Z")),
+            endTime: dateToHMS(new Date(timetable.endTime + "Z")),
             groupAbbr: group.groupOfPersonByGroupId.abbrName
           });
         });
@@ -60,10 +52,7 @@ export default class EventsOnDay extends React.Component {
   };
 
   render() {
-    const dateInterval = dateStringToTimeInterval(
-      this.props.navigation.getParam("date", null)
-    );
-    const eventId = this.props.navigation.getParam("event", null).eventId;
+    const { eventId, timeIds } = this.props.navigation.getParam("event", null);
 
     return (
       <Query query={gql(GET_SELECTED_GROUPID)}>
@@ -80,12 +69,11 @@ export default class EventsOnDay extends React.Component {
               query={gql(GET_EVENTS_ON_DAY)}
               variables={{
                 eventId,
+                timeIds,
                 groupId:
                   selectedGroup.groupId !== -1
                     ? selectedGroup.groupId
-                    : undefined,
-                startTime: dateInterval.start,
-                endTime: dateInterval.end
+                    : undefined
               }}
             >
               {({ data, loading, error, refetch }) => {
@@ -139,8 +127,7 @@ export default class EventsOnDay extends React.Component {
                               }}
                             >
                               <Text h4>
-                                {item.startTime.split("T")[1]}-
-                                {item.endTime.split("T")[1]}
+                                {item.startTime}-{item.endTime}
                               </Text>
                               <Badge
                                 badgeStyle={{ paddingVertical: 8 }}

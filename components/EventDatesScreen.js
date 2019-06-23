@@ -30,11 +30,11 @@ function normalizeData(data) {
             selected: true,
             marked: true,
             single: true,
-            timeId: time.id
+            timeIds: [time.id]
           };
         else {
           dates[date].single = false;
-          dates[date].timeId = null;
+          dates[date].timeIds.push(time.id);
         }
       }
     );
@@ -99,13 +99,14 @@ export default class EventDatesScreen extends React.Component {
                           this.props.navigation.push("EventInfoScreen", {
                             event: {
                               eventId: event.eventId,
-                              timeId: markedDates[day.dateString].timeId
+                              timeId: markedDates[day.dateString].timeIds[0]
                             }
                           });
                         } else {
                           this.props.navigation.push("EventsOnDayScreen", {
                             event: {
-                              eventId: event.eventId
+                              eventId: event.eventId,
+                              timeIds: markedDates[day.dateString].timeIds
                             },
                             date: day.dateString
                           });

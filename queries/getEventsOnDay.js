@@ -2,8 +2,7 @@ export const GET_EVENTS_ON_DAY = `
   query GetEventsOnDay(
     $eventId: Int!
     $groupId: Int
-    $startTime: Datetime!
-    $endTime: Datetime!
+    $timeIds: [Int!]
   ) {
     currentPerson {
       nodeId
@@ -22,12 +21,7 @@ export const GET_EVENTS_ON_DAY = `
                   id
                   name
                   timetablesByEventId(
-                    filter: {
-                      startTime: {
-                        greaterThanOrEqualTo: $startTime
-                        lessThanOrEqualTo: $endTime
-                      }
-                    }
+                    filter: { id: { in: $timeIds } }
                   ) {
                     nodes {
                       nodeId
