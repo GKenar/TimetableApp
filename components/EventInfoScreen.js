@@ -30,7 +30,7 @@ const EventDescription = ({ eventId, timetableId }) => (
         event.timetablesByEventId.nodes[0].endTime + "Z"
       );
       return (
-        <ScrollView>
+        <ScrollView style={{ paddingHorizontal: 6 }}>
           <Text h3 style={{ textAlign: "center" }}>
             {event.name}
           </Text>
@@ -44,12 +44,12 @@ const EventDescription = ({ eventId, timetableId }) => (
           <Text style={styles.fieldName}>
             Конец в: {dateToHMS(eventEndDate)}
           </Text>
-          <Text style={styles.fieldName}>Описание:</Text>
-          <Text style={styles.fieldValue}>{"Здесь описание события"}</Text>
-          <Text style={styles.fieldName}>Место:</Text>
+          <Text style={styles.fieldName}>Место проведения:</Text>
           <Text style={styles.fieldValue}>
             {event.timetablesByEventId.nodes[0].placeByPlaceId}
           </Text>
+          <Text style={styles.fieldName}>Описание:</Text>
+          <Text style={styles.fieldValue}>{"Здесь описание события"}</Text>
         </ScrollView>
       );
     }}
