@@ -6,6 +6,7 @@ import { GET_EVENT_DETAILS } from "../queries/getEventDetails";
 import gql from "graphql-tag";
 import LoadingIndicator from "./LoadingIndicator";
 import ErrorMessage from "./ErrorMessage";
+import { dateToYMD, dateToHMS } from "./dateFunctions";
 
 const EventDescription = ({ eventId, timetableId }) => (
   <Query query={gql(GET_EVENT_DETAILS)} variables={{ eventId, timetableId }}>
@@ -22,6 +23,12 @@ const EventDescription = ({ eventId, timetableId }) => (
       if (loading) return <LoadingIndicator />;
 
       const event = data.eventById;
+      const eventStartDate = new Date(
+        event.timetablesByEventId.nodes[0].startTime + "Z"
+      );
+      const eventEndDate = new Date(
+        event.timetablesByEventId.nodes[0].endTime + "Z"
+      );
       return (
         <ScrollView>
           <Text h3 style={{ textAlign: "center" }}>
@@ -29,10 +36,14 @@ const EventDescription = ({ eventId, timetableId }) => (
           </Text>
           <Divider style={{ margin: 6 }} />
           <Text style={styles.fieldName}>
-            Дата:  {event.timetablesByEventId.nodes[0].startTime.split("T")[0]}
+            Дата: {dateToYMD(eventStartDate)}
           </Text>
-          <Text style={styles.fieldName}>Начало в:  {event.timetablesByEventId.nodes[0].startTime.split("T")[1]}</Text>
-          <Text style={styles.fieldName}>Конец в:  {event.timetablesByEventId.nodes[0].endTime.split("T")[1]}</Text>
+          <Text style={styles.fieldName}>
+            Начало в: {dateToHMS(eventStartDate)}
+          </Text>
+          <Text style={styles.fieldName}>
+            Конец в: {dateToHMS(eventEndDate)}
+          </Text>
           <Text style={styles.fieldName}>Описание:</Text>
           <Text style={styles.fieldValue}>{"Здесь описание события"}</Text>
           <Text style={styles.fieldName}>Место:</Text>
