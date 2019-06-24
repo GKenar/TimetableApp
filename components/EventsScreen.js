@@ -254,7 +254,11 @@ export default class EventsScreen extends React.Component {
                     this.props.groupId !== -1 ? this.props.groupId : undefined
                 });
               }}
-              refreshing={networkStatus === 4 || networkStatus === 3}
+              refreshing={
+                networkStatus === 4 ||
+                networkStatus === 3 ||
+                networkStatus === 2
+              }
             />
           );
         }}
