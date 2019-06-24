@@ -30,7 +30,7 @@ const EventDescription = ({ eventId, timetableId }) => (
         event.timetablesByEventId.nodes[0].endTime + "Z"
       );
       return (
-        <ScrollView style={{ paddingHorizontal: 6 }}>
+        <ScrollView style={{ paddingHorizontal: 20 }}>
           <Text h3 style={{ textAlign: "center" }}>
             {event.name}
           </Text>
