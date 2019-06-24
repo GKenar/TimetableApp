@@ -6,7 +6,7 @@ import { Query } from "react-apollo";
 import lodash from "lodash";
 import calendarLocalization from "./calendarLocalization"; //???
 import { GET_EVENTS } from "../queries/getEvents";
-import { daysInMonth, dateToYMD, dateToHMS, addDays } from "./dateFunctions";
+import { dateToYMD, dateToHMS } from "./dateFunctions";
 import LoadingIndicator from "./LoadingIndicator";
 import ErrorMessage from "./ErrorMessage";
 import gql from "graphql-tag";
@@ -29,13 +29,6 @@ const normalizeData = (requestedData, startDate, endDate) => {
         event.eventByEventId.timetablesByEventId.nodes.forEach(time => {
           const utcStartTime = new Date(time.startTime + "Z");
           const utcEndTime = new Date(time.endTime + "Z");
-
-          //var options = { weekday: 'numeric', year: 'long', month: 'numeric', day: 'numeric' };
-          //console.log(dateToYMD(utcStartTime));
-          //console.log(utcStartTime.toLocaleDateString());
-
-          //const startDateTime = time.startTime.split("T");
-          //const endDateTime = time.endTime.split("T");
 
           if (!data[dateToYMD(utcStartTime)]) {
             data[dateToYMD(utcStartTime)] = [];
@@ -69,7 +62,6 @@ const normalizeData = (requestedData, startDate, endDate) => {
 };
 
 function unionEvents(prev, current) {
-  //Можно изменять acc??
   const prevToArray = prev.reduce(
     (
       acc,
@@ -165,7 +157,6 @@ function unionEvents(prev, current) {
     nodeId
   }));
 
-  //console.log(finalResult);
   return finalResult;
 }
 
@@ -177,10 +168,6 @@ export default class EventsScreen extends React.Component {
 
     this.minDate = new Date(nowLocal.getFullYear(), nowLocal.getMonth());
     this.maxDate = new Date(nowLocal.getFullYear(), nowLocal.getMonth() + 1);
-
-    // console.log("AAAAAAAAAAAA");
-    // console.log(this.minDate);
-    // console.log(this.maxDate);
   }
 
   render() {
@@ -188,7 +175,7 @@ export default class EventsScreen extends React.Component {
       <Query
         query={gql(GET_EVENTS)}
         variables={{
-          minDate: this.minDate, //Возможно, везде в variables нужно добавить .toISOString()
+          minDate: this.minDate,
           maxDate: this.maxDate,
           groupId: this.props.groupId !== -1 ? this.props.groupId : undefined
         }}
@@ -224,14 +211,12 @@ export default class EventsScreen extends React.Component {
             new Date(this.maxDate)
           );
 
-          //console.log(networkStatus);
           console.log("max: " + this.maxDate);
           console.log("min: " + this.minDate);
 
           return (
             <Agenda
               items={events}
-              //Может быть проблема при просмотре следующих месяцев
               onDayChange={date => {
                 //Здесь мы получаем даты промежутка и делаем запрос на него
                 const firstDateOfInterval = new Date(date.year, date.month);
@@ -270,7 +255,6 @@ export default class EventsScreen extends React.Component {
                 });
               }}
               refreshing={networkStatus === 4 || networkStatus === 3}
-              //refreshControl={null}
             />
           );
         }}
@@ -282,7 +266,7 @@ export default class EventsScreen extends React.Component {
     let fetchDateIntervalStart;
     let fetchDateIntervalEnd;
     let needFetchMore = false;
-    //Начальный интервал minDate и maxDate должны быть равны месяцу
+
     if (firstDateOfInterval < this.minDate) {
       fetchDateIntervalStart = firstDateOfInterval;
       fetchDateIntervalEnd = this.minDate;
@@ -388,7 +372,6 @@ export default class EventsScreen extends React.Component {
           activeOpacity={0.9}
         >
           <View style={{ padding: 10 }}>
-            {/* контейнер? */}
             <View
               style={{
                 flex: 1,
@@ -433,10 +416,6 @@ export default class EventsScreen extends React.Component {
       </View>
     );
   }
-
-  //loadItems(month) {
-  //  console.log(month);
-  //}
 }
 
 const styles = StyleSheet.create({
