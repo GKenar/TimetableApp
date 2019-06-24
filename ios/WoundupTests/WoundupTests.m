@@ -14,11 +14,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React Native!"
 
-@interface TimetableAppTests : XCTestCase
+@interface WoundupTests : XCTestCase
 
 @end
 
-@implementation TimetableAppTests
+@implementation WoundupTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL(^)(UIView *view))test
 {

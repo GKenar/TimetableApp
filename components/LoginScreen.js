@@ -148,7 +148,7 @@ export default class LoginScreen extends React.Component {
         />
         <View style={styles.loginContainer}>
           <Text h3 style={{ marginBottom: 30, textAlign: "center" }}>
-            Timetable App
+            Woundup
           </Text>
           <AuthForm {...this.props} />
         </View>
