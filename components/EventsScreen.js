@@ -173,31 +173,14 @@ export default class EventsScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    //Время то текущее ставится!!!!
-    this.minDate = new Date();
-    this.minDate.setDate(1);
-    this.minDate.setHours(0);
-    this.minDate.setMinutes(0);
-    this.minDate.setSeconds(0);
+    const nowLocal = new Date();
 
-    this.maxDate = new Date();
-    this.maxDate.setMonth(this.maxDate.getMonth() + 1);
-    this.maxDate.setDate(1);
-    this.maxDate.setHours(0);
-    this.maxDate.setMinutes(0);
-    this.maxDate.setSeconds(0);
+    this.minDate = new Date(nowLocal.getFullYear(), nowLocal.getMonth());
+    this.maxDate = new Date(nowLocal.getFullYear(), nowLocal.getMonth() + 1);
 
-    //console.log("AAAAAAAAAAAA");
-    //console.log(this.minDate);
-    //console.log(this.minDate.toLocaleString());
-    //console.log(this.minDate.toString());
-    //console.log(this.minDate.toISOString());
-    //console.log(this.maxDate);
-    //console.log(this.maxDate.toLocaleString());
-    //console.log(this.maxDate.toString());
-    //console.log(this.maxDate.toISOString());
-    //this.minDate = new Date("2019-03-01");
-    //this.maxDate = new Date("2019-04-01");
+    // console.log("AAAAAAAAAAAA");
+    // console.log(this.minDate);
+    // console.log(this.maxDate);
   }
 
   render() {
@@ -250,68 +233,21 @@ export default class EventsScreen extends React.Component {
               items={events}
               //Может быть проблема при просмотре следующих месяцев
               onDayChange={date => {
-                //Сделал пока так, возможно, можно переделать
-
-                //Здесь мы получаем даты следующего месяца и делаем запрос на него
-                const nextYear = date.year + (date.month === 12 ? 1 : 0);
-                const nextMonth = date.month % 12;
-                const firstDateOfNextMonth = new Date(
-                  nextYear,
-                  nextMonth,
-                  1,
-                  0,
-                  0,
-                  0,
-                  0
-                );
-                //Упростить?
-                const lastDateOfNextMonth = addDays(
-                  new Date(
-                    nextYear,
-                    nextMonth,
-                    daysInMonth(date.month - 1, date.year),
-                    0,
-                    0,
-                    0,
-                    0
-                  ),
-                  1
-                );
+                //Здесь мы получаем даты промежутка и делаем запрос на него
+                const firstDateOfInterval = new Date(date.year, date.month);
+                const lastDateOfInterval = new Date(date.year, date.month + 1);
 
                 this.checkAndFetchMore(
                   fetchMore,
-                  firstDateOfNextMonth,
-                  lastDateOfNextMonth
+                  firstDateOfInterval,
+                  lastDateOfInterval
                 );
               }}
               loadItemsForMonth={date => {
                 //Здесь мы получаем интервал дат: от начала месяца (который передаётся в аргументе)
                 //до 1 числа месяца через месяц после месяца в аргументе :/ Т.е январь 01 - март 01
-                const firstDateOfInterval = new Date(
-                  date.year,
-                  date.month - 1,
-                  1,
-                  0,
-                  0,
-                  0,
-                  0
-                );
-                //Упростить?
-                const lastDateOfInterval = addDays(
-                  new Date(
-                    date.year + (date.month === 12 ? 1 : 0),
-                    date.month % 12,
-                    daysInMonth(
-                      date.month % 12,
-                      date.year + (date.month === 12 ? 1 : 0)
-                    ),
-                    0,
-                    0,
-                    0,
-                    0
-                  ),
-                  1
-                );
+                const firstDateOfInterval = new Date(date.year, date.month - 1);
+                const lastDateOfInterval = new Date(date.year, date.month + 1);
 
                 this.checkAndFetchMore(
                   fetchMore,
