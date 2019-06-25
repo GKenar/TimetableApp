@@ -46,7 +46,9 @@ const EventDescription = ({ eventId, timetableId }) => (
           </Text>
           <Text style={styles.fieldName}>Место проведения:</Text>
           <Text style={styles.fieldValue}>
-            {event.timetablesByEventId.nodes[0].placeByPlaceId}
+            {event.timetablesByEventId.nodes[0].placeByPlaceId
+              ? event.timetablesByEventId.nodes[0].placeByPlaceId.name
+              : "Здесь описание места"}
           </Text>
           <Text style={styles.fieldName}>Описание:</Text>
           <Text style={styles.fieldValue}>{"Здесь описание события"}</Text>
