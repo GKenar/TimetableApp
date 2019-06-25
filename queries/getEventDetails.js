@@ -8,10 +8,12 @@ export const GET_EVENT_DETAILS = `
       timetablesByEventId(condition: { id: $timetableId }) {
         nodes {
           nodeId
+          id
           startTime
           endTime
           placeByPlaceId {
             nodeId
+            id
             name
           }
         }
