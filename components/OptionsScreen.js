@@ -30,7 +30,7 @@ export default class OptionsScreen extends React.Component {
             <Divider style={{ height: 2, margin: 10 }} />
             <View style={{ flex: 1, justifyContent: "flex-end" }}>
               <Button
-                title="Log out"
+                title="Выйти из аккаунта"
                 buttonStyle={{ backgroundColor: "red" }}
                 onPress={() =>
                   logOut()

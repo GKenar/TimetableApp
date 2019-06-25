@@ -78,7 +78,7 @@ class AuthForm extends React.Component {
           <View style={{ flex: 1, alignItems: "center" }}>
             {this.state.invalidUser ? (
               <ErrorForm style={{ marginBotton: 5 }}>
-                <Text h4 style={{ textAlign: "center" }}>
+                <Text style={{ textAlign: "center", fontSize: 22 }}>
                   Неверный логин или пароль
                 </Text>
               </ErrorForm>
@@ -141,14 +141,17 @@ export default class LoginScreen extends React.Component {
       <View style={styles.container}>
         <Header
           centerComponent={
-            <Text h2 style={{ color: "white" }}>
-              LogIn
+            <Text h3 style={{ color: "white" }}>
+              Woundup
             </Text>
           }
         />
         <View style={styles.loginContainer}>
-          <Text h3 style={{ marginBottom: 30, textAlign: "center" }}>
-            Woundup
+          <Text
+            h4
+            style={{ marginBottom: 10, marginTop: 30, textAlign: "center" }}
+          >
+            Вход в аккаунт
           </Text>
           <AuthForm {...this.props} />
         </View>
