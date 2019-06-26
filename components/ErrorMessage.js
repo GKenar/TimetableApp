@@ -7,8 +7,17 @@ export default props => {
 
   console.log(errorObject);
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "stretch" }}>
-      <Text h4>{message}</Text>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "stretch",
+        margin: 20
+      }}
+    >
+      <Text h4 style={{ textAlign: "center", marginBottom: 5 }}>
+        {message}
+      </Text>
       {children}
     </View>
   );
